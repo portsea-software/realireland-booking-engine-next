@@ -1,0 +1,30 @@
+{
+  "name": "realireland-booking-engine-next",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/eslint": "1.12.1",
+    "@nuxt/fonts": "0.12.1",
+    "@nuxt/icon": "2.1.1",
+    "@stripe/stripe-js": "^8.6.0",
+    "bootstrap": "^5.3.8",
+    "core-js": "^3.47.0",
+    "eslint": "^9.0.0",
+    "nuxt": "^4.2.2",
+    "stripe": "^20.1.0",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "devDependencies": {
+    "sass": "^1.97.1",
+    "sass-loader": "^16.0.6"
+  }
+}

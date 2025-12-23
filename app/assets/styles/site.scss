@@ -1,0 +1,126 @@
+// irish luxury tours colour palette
+$ilt-green: #678a67;
+$ilt-gold: #ae9840;
+$ilt-header-background: #022328;
+$ilt-footer-background: #022328;
+$ilt-text-colour: #022328;
+$ilt-grey-text-background: #f5f5f5;
+$ilt-muted-red: #a62700;
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway&family=OpenSans&display=swap');
+
+// bootstrap variable overrides
+$enable-rounded: false;
+$success: $ilt-gold;
+$danger: $ilt-muted-red;
+$info: $ilt-green;
+$btn-padding-x: 3.5rem;
+$input-padding-x: 2rem;
+$input-font-family: 'OpenSans', Arial, Helvetica, sans-serif;
+$font-size-base: 0.9rem;
+$headings-font-family: 'Raleway', Arial, Helvetica, sans-serif;
+
+// Bootstrap and its default variables
+@import 'bootstrap/scss/bootstrap.scss';
+// BootstrapVue and its default variables
+// @import 'bootstrap-vue/src/index.scss';
+
+@import './animation.scss';
+@import './validation.scss';
+
+body {
+  font-family: 'OpenSans', Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: $ilt-text-colour;
+}
+
+.btn {
+  text-transform: uppercase;
+  font-size: 0.8em;
+}
+
+.form-control {
+  font-size: 0.8em;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding-bottom: 140px;
+  min-height: 100%;
+}
+
+// reduce body padding as footer is shorter on md devices upwards
+@media only screen and (min-width: 768px) {
+  body {
+    padding-bottom: 80px;
+  }
+}
+
+.header {
+  background-color: $ilt-header-background;
+  color: white;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+footer {
+  background-color: $ilt-footer-background;
+  color: white;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+}
+
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  a:link {
+    color: white;
+  }
+  a:visited {
+    color: white;
+  }
+  a:hover {
+    color: white;
+  }
+  a:active {
+    color: white;
+  }
+}
+
+.progress-bar {
+  background-color: $ilt-green;
+  border-radius: 0%;
+  text-transform: uppercase;
+  font-weight: bolder;
+  font-size: 0.9rem;
+}
+
+.card-header {
+  background-color: $ilt-green;
+  color: white;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+.modal-header {
+  background-color: $ilt-green;
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.input-group-prepend {
+  span {
+    background-color: $ilt-green;
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+  }
+}

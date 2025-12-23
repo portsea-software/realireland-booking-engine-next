@@ -1,0 +1,11 @@
+.form-control.invalid {
+  border: 2px solid #a62700;
+  background: #ffe6e6;
+}
+.validation-message {
+  color: #a62700;
+  font-style: bold;
+  font-size: 0.8em;
+  text-align: right;
+  margin-right: 1rem;
+}

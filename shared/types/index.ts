@@ -1,36 +1,19 @@
+export type AgeType = "ADL" | "CHD" | "INF";
 
-// General types
-export type ErrorType = {
-    errors?: Record<string, string[]>;
-    status: number;
-    title?: string;
-    detail?: string
-    traceId: string;
-    type: string
-}
-
-export type APIError = {
-    statusCode: number,
-    statusMessage: string,
-    message: string,
-    data?: Record<string, string[]>
-}
-
-export type LockedAccount = {
-    individualAccountId: number,
-    emailAddress: string,
-}
 export type Client = {
-    RowNo: number,
-    individual_id: number,
-    first_name: string,
-    last_name: string,
-    email_address: string,
-    individual_address: string,
-    portal_account_id: number,
-}
+	title: string;
+	firstName: string;
+	lastName: string;
+	age: "ADL";
+	email: string;
+};
 
-export type PortalSetting = {
-    name: string,
-    value: string
-}
+export type Passenger = {
+	passengerId: number;
+	title: string;
+	firstName: string;
+	lastName: string;
+	age: AgeType;
+	dietaryRequirements: string;
+	editable: boolean;
+};

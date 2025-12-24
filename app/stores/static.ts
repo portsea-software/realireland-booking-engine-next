@@ -1,13 +1,9 @@
-// stores/static.ts
-import { defineStore } from "pinia";
-import { useWizardStore } from "~/stores/wizard";
-
 type Currency = { currencyCode: string; [k: string]: any };
 type Airport = { airportName: string; [k: string]: any };
 type County = any;
 type Title = any;
 
-export const useStaticStore = defineStore("static", {
+export const useStaticStore = defineStore("StaticStore", {
 	state: () => ({
 		titles: [] as Title[],
 		counties: [] as County[],
@@ -29,20 +25,15 @@ export const useStaticStore = defineStore("static", {
 			if (this.airports?.length) return;
 
 			const wizard = useWizardStore();
-			// const config = useRuntimeConfig();
-			// const baseURL = String(config.public.engineApiBaseUrl || "");
-
 			try {
-				// original code: lookup/airports/country/IE
-				// const data = await $fetch<Airport[]>('lookup/airports/country/IE', { baseURL })
+				const airportsData = await useApiAppAuth<Airport[]>(
+					"api/booking-engine/lookup/airports/country/IE",
+					{ method: "GET" },
+				);
 
-				// this.airports = (data ?? []).sort((a, b) =>
-				//   String(a.airportName ?? '').localeCompare(String(b.airportName ?? ''))
-				// )
-				const res = await useApiAppAuth<any>("api/topaz/lookup/airports/country/IE", {
-					method: "GET",
-				});
-				console.log(res);
+				this.airports = (airportsData ?? []).sort((a, b) =>
+					String(a.airportName ?? "").localeCompare(String(b.airportName ?? "")),
+				);
 			}
 			catch (error) {
 				console.log(error);
@@ -54,15 +45,16 @@ export const useStaticStore = defineStore("static", {
 			if (this.counties?.length) return;
 
 			const wizard = useWizardStore();
-			const config = useRuntimeConfig();
-			const baseURL = String(config.public.engineApiBaseUrl || "");
-
 			try {
-				// Only counties from Ireland
-				const data = await $fetch<County[]>("region/countries/IE/areas", { baseURL });
-				this.counties = data ?? [];
+				const countiesData = await useApiAppAuth<County[]>(
+					"api/booking-engine/region/countries/IE/areas",
+					{ method: "GET" },
+				);
+
+				this.counties = countiesData ?? [];
 			}
 			catch (error) {
+				console.log(error);
 				wizard.setFatalError(error);
 			}
 		},
@@ -71,14 +63,16 @@ export const useStaticStore = defineStore("static", {
 			if (this.currencies?.length) return;
 
 			const wizard = useWizardStore();
-			const config = useRuntimeConfig();
-			const baseURL = String(config.public.engineApiBaseUrl || "");
-
 			try {
-				const data = await $fetch<Currency[]>("lookup/currencies", { baseURL });
-				this.currencies = data ?? [];
+				const currenciesData = await useApiAppAuth<Currency[]>(
+					"api/booking-engine/lookup/currencies",
+					{ method: "GET" },
+				);
+
+				this.currencies = currenciesData ?? [];
 			}
 			catch (error) {
+				console.log(error);
 				wizard.setFatalError(error);
 			}
 		},
@@ -87,16 +81,16 @@ export const useStaticStore = defineStore("static", {
 			if (this.titles?.length) return;
 
 			const wizard = useWizardStore();
-			const config = useRuntimeConfig();
-			const baseURL = String(config.public.engineApiBaseUrl || "");
-
 			try {
-				// In your axios version you set Content-Type: null.
-				// With $fetch you generally don't need headers for GET.
-				const data = await $fetch<Title[]>("lookup/titles", { baseURL });
-				this.titles = data ?? [];
+				const titlesData = await useApiAppAuth<Title[]>(
+					"api/booking-engine/lookup/titles",
+					{ method: "GET" },
+				);
+
+				this.titles = titlesData ?? [];
 			}
 			catch (error) {
+				console.log(error);
 				wizard.setFatalError(error);
 			}
 		},

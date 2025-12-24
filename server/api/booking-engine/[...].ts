@@ -3,7 +3,7 @@ import { getRequestHeader } from "#imports";
 
 export default defineEventHandler(async (event) => {
 	const proxyUrl = useRuntimeConfig().public.engineApiBaseUrl;
-	const targetPath = event.path.replace(/^\/api\/topaz\//, "");
+	const targetPath = event.path.replace(/^\/api\/booking-engine\//, "");
 	const targetUrl = joinURL(proxyUrl, targetPath);
 
 	const currentHeader = getRequestHeader(event, "authorization");
@@ -16,8 +16,6 @@ export default defineEventHandler(async (event) => {
 	else {
 		authHeader = currentHeader.valueOf();
 	}
-
-	console.log("targetUrl", targetUrl);
 
 	return proxyRequest(event, targetUrl, {
 		headers: {

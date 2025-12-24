@@ -24,8 +24,8 @@ export default defineNuxtConfig({
 
 			airportCodes: process.env.NUXT_PUBLIC_AIRPORT_CODES ?? "",
 
-			minNights: process.env.NUXT_PUBLIC_MIN_NIGHTS ?? "",
-			maxNights: process.env.NUXT_PUBLIC_MAX_NIGHTS ?? "",
+			minNights: "",
+			maxNights: "",
 			defaultNights: process.env.NUXT_PUBLIC_DEFAULT_NIGHTS ?? "",
 
 			minAdl: process.env.NUXT_PUBLIC_MIN_ADL ?? "",

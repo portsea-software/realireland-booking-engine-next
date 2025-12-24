@@ -33,7 +33,7 @@
 
 			<div
 				v-if="debugMode"
-				class="row my-4 justify-content-end"
+				class="d-flex my-4 justify-content-end"
 			>
 				<button
 					class="btn btn-info mx-1"

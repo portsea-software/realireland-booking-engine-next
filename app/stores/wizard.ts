@@ -2,11 +2,13 @@
 // import { defineStore } from 'pinia'
 // import * as dateHelper from '~/utils/date'
 
+import { markRaw, type Component } from "vue";
+
 // // components
 import WizardError from "~/components/wizard/00-error.vue";
 import WizardStart from "~/components/wizard/01-start.vue";
-import WizardTransfers from "~/components/wizard/02-transfers.vue";
-// import WizardDayByDay from '~/components/wizard/03_DayByDay.vue'
+import WizardTransfers from "@@/app/components/wizard/02-transfers.vue";
+import WizardDayByDay from "~/components/wizard/03-day-by-day.vue";
 // import WizardRooming from '~/components/wizard/04_Rooming.vue'
 // import WizardPassengers from '~/components/wizard/05_Passengers.vue'
 // import WizardSummary from '~/components/wizard/06_Summary.vue'
@@ -17,10 +19,24 @@ import WizardTransfers from "~/components/wizard/02-transfers.vue";
 // import { useDayByDayStore } from '~/stores/dayByDay'
 // import { useCountyProductsStore } from '~/stores/county-products'
 
+const WIZARD_COMPONENTS = [
+	markRaw(WizardStart),
+	markRaw(WizardTransfers),
+	markRaw(WizardDayByDay),
+] as const satisfies readonly [Component, ...Component[]];
+
+const ERROR_COMPONENT: Component = markRaw(WizardError);
+
+type WizardState = {
+	fatalError: boolean;
+	wizardStep: number; // 1-based
+	wizardLabels: string[];
+};
+
 export const useWizardStore = defineStore("wizard", {
-	state: () => ({
+	state: (): WizardState => ({
 		fatalError: false,
-		wizardStep: 2,
+		wizardStep: 1,
 
 		wizardLabels: [
 			"Start",
@@ -33,18 +49,6 @@ export const useWizardStore = defineStore("wizard", {
 			"Thankyou",
 		] as string[],
 
-		wizardComponents: [
-			WizardStart,
-			WizardTransfers,
-			//   WizardDayByDay,
-			//   WizardRooming,
-			//   WizardPassengers,
-			//   WizardSummary,
-			//   WizardPayment,
-			//   WizardThankyou,
-		] as unknown as any,
-
-		errorComponent: WizardError,
 	}),
 
 	getters: {
@@ -52,9 +56,9 @@ export const useWizardStore = defineStore("wizard", {
 
 		wizardLabel: state => state.wizardLabels[state.wizardStep - 1],
 
-		wizardComponent: (state) => {
-			if (state.fatalError) return state.errorComponent;
-			return state.wizardComponents[state.wizardStep - 1] ?? state.errorComponent;
+		wizardComponent(): Component {
+			if (this.fatalError) return ERROR_COMPONENT;
+			return WIZARD_COMPONENTS[this.wizardStepIndex] ?? WIZARD_COMPONENTS[0];
 		},
 
 		wizardProgress: state =>
@@ -72,18 +76,19 @@ export const useWizardStore = defineStore("wizard", {
 
 		async nextStep() {
 			if (this.wizardStep === 1) {
-				// const start = useStartStore()
-				// const county = useCountyProductsStore()
+				const start = useStartStore();
+				const county = useCountyStore();
 
-				// await county.initialiseCountyData({
-				//   countyId: start.selectedCounty?.areaId,
-				//   countyName: start.selectedCounty?.name,
-				//   fromDate: start.fromDate,
-				//   toDate: dateHelper.addDays(start.fromDate, start.noOfNights),
-				// })
+				await county.initialiseCountyData({
+					countyId: start.selectedCounty?.areaId,
+					countyName: start.selectedCounty?.name,
+					fromDate: start.fromDate,
+					toDate: addDays(start.fromDate, start.noOfNights),
+				});
 			}
 
 			this.wizardStep += this.wizardStep;
+			console.log(`this.wizardStep ${this.wizardStep}`, `this.wizardStepIndex ${this.wizardStepIndex}`);
 		},
 
 		setFatalError(payload?: any) {

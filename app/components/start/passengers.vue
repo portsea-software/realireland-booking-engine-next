@@ -1,5 +1,5 @@
 <template>
-	<div class="form-row align-items-top">
+	<div class="row align-items-top">
 		<div class="col-xs-6 col-md-4">
 			<div class="input-group mb-3">
 				<div class="input-group-prepend">

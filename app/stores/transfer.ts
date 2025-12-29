@@ -40,10 +40,10 @@ export const useTransfersStore = defineStore("transfers", {
 
 	getters: {
 		getCountyTransfersIn(): TransferProduct[] {
-			return useProductsStore().getCountyTransfersIn as unknown as TransferProduct[];
+			return useCountyStore().getCountyTransfersIn as unknown as TransferProduct[];
 		},
 		getCountyTransfersOut(): TransferProduct[] {
-			return useProductsStore().getCountyTransfersOut as unknown as TransferProduct[];
+			return useCountyStore().getCountyTransfersOut as unknown as TransferProduct[];
 		},
 		getFirstHotel(): any | null {
 			return useDayByDayStore().getFirstHotel;

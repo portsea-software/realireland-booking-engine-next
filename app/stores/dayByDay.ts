@@ -37,13 +37,13 @@ export const useDayByDayStore = defineStore("dayByDay", {
 
 	getters: {
 		getCountyHotels() {
-			return useProductsStore().getCountyHotels;
+			return useCountyStore().getCountyHotels;
 		},
 		getCountyExcursions() {
-			return useProductsStore().getCountyExcursions;
+			return useCountyStore().getCountyExcursions;
 		},
 		getCountyEntertainments() {
-			return useProductsStore().getCountyEntertainments;
+			return useCountyStore().getCountyEntertainments;
 		},
 
 		getFirstHotel(): any | null {
@@ -184,7 +184,7 @@ export const useDayByDayStore = defineStore("dayByDay", {
 		},
 
 		addProduct(payload: AddProductPayload) {
-			const productsStore = useProductsStore();
+			const productsStore = useCountyStore();
 			const transfers = useTransfersStore();
 			const rooming = useRoomingStore();
 

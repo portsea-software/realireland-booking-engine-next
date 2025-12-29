@@ -28,14 +28,14 @@ export type Product = {
 	rank?: number;
 };
 
-type InitCountyPayload = { countyId: number; countyName: string };
+type InitCountyPayload = { countyId: number; countyName: string; fromDate: Date; toDate: Date };
 
 function safeInt(v: unknown, fallback = 0) {
 	const n = Number.parseInt(String(v ?? ""), 10);
 	return Number.isFinite(n) ? n : fallback;
 }
 
-export const useProductsStore = defineStore("products", {
+export const useCountyStore = defineStore("CountyStore", {
 	state: () => ({
 		productsLoaded: false,
 		products: [] as Product[],

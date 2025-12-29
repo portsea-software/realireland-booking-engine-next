@@ -6,7 +6,7 @@
 		>
 			<strong>Loading...</strong>
 			<div
-				class="ml-5 spinner-border"
+				class="ms-5 spinner-border"
 				role="status"
 			>
 				<span class="sr-only">Loading...</span>
@@ -21,24 +21,24 @@
 
 				<ul class="list-group list-group-flush">
 					<li class="list-group-item">
-						<font-awesome-icon icon="plane-departure" />
-						<span class="ml-2">
+						<Icon name="i-lucide-plane-takeoff" />
+						<span class="ms-2">
 							If you will be flying in to Ireland, and know the airports that you will be arriving and
 							departing Ireland from then please let us know.
 						</span>
 					</li>
 
 					<li class="list-group-item">
-						<font-awesome-icon icon="plane" />
-						<span class="ml-2">
+						<Icon name="i-lucide-plane" />
+						<span class="ms-2">
 							If you will be flying into Ireland but don't know which Airport yet, don't worry, we can get
 							this information from you closer to departure.
 						</span>
 					</li>
 
 					<li class="list-group-item">
-						<font-awesome-icon icon="plane-slash" />
-						<span class="ml-2">
+						<Icon name="i-fa7-solid:plane-slash" />
+						<span class="ms-2">
 							If you prefer to make your own way to Donegal, then that is no problem, we will not include
 							transfers in your price.
 						</span>
@@ -127,7 +127,7 @@
 									<select
 										id="arrAirport"
 										v-model="inboundAirport"
-										class="form-control"
+										class="form-select"
 										:class="{ invalid: v$.inboundAirport.$error }"
 										@blur="v$.inboundAirport.$touch()"
 									>
@@ -150,7 +150,7 @@
 									<select
 										id="depAirport"
 										v-model="outboundAirport"
-										class="form-control"
+										class="form-select"
 										:class="{ invalid: v$.outboundAirport.$error }"
 										@blur="v$.outboundAirport.$touch()"
 									>
@@ -272,7 +272,7 @@ function nextStep() {
 		return;
 	}
 
-	wizardStore.nextStep();
+	wizardStore.wizardStep = 3;
 }
 
 // expose validate() so parent can use the same pattern as other components

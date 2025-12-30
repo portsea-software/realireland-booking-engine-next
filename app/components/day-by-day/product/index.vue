@@ -68,9 +68,10 @@
 					</div>
 				</div>
 
-				<p class="card-text mt-2">
-					{{ description }}
-				</p>
+				<p
+					class="card-text mt-2"
+					v-html="description"
+				/>
 			</div>
 
 			<div class="card-footer">

@@ -215,7 +215,6 @@ type Airport = {
 	airportCode: string;
 	airportName: string;
 	cityId: number;
-	name?: string; // some code used .name, some used .airportName
 	[k: string]: any;
 };
 
@@ -241,14 +240,12 @@ const outboundAirport = computed<Airport | null>({
 	set: value => transfersStore.setOutboundAirport(value),
 });
 
-// ---- validation
 const isRequireYes = computed(() => requireTransfers.value === "yes");
 
-// requiredIf replacement (typed & predictable)
 const requiredIfYes = helpers.withMessage(
 	"This field is required",
 	(value: any) => {
-		if (!isRequireYes.value) return true; // not required unless "yes"
+		if (!isRequireYes.value) return true;
 		return helpers.req(value);
 	},
 );
@@ -261,7 +258,6 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, { requireTransfers, inboundAirport, outboundAirport });
 
-// ---- navigation
 function prevStep() {
 	wizardStore.wizardStep--;
 }
@@ -272,10 +268,9 @@ function nextStep() {
 		return;
 	}
 
-	wizardStore.wizardStep = 3;
+	wizardStore.nextStep();
 }
 
-// expose validate() so parent can use the same pattern as other components
 async function validate() {
 	v$.value.$touch();
 	return !v$.value.$invalid;

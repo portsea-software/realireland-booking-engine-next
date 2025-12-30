@@ -21,7 +21,19 @@
 
 		<div class="container py-4">
 			<div class="row">
-				<div class="col">
+				<div
+					v-if="isLoading"
+					class="d-flex justify-content-center align-items-center mt-4"
+				>
+					<div
+						class="spinner-border"
+						role="status"
+					/>
+				</div>
+				<div
+					v-else
+					class="col"
+				>
 					<Transition
 						name="slide"
 						mode="out-in"
@@ -116,6 +128,9 @@ const wizard = useWizardStore();
 const { wizardComponent, canNext, canPrev, wizardStep } = storeToRefs(wizard);
 
 const staticStore = useStaticStore();
+const countyStore = useCountyStore();
+const isLoading = computed(() => countyStore.isLoading);
+
 onMounted(async () => {
 	await staticStore.initAirports();
 });

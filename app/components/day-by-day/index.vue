@@ -1,6 +1,5 @@
 <template>
 	<div>
-		{{ firstDay }}
 		<div
 			v-if="firstDay"
 			class="d-none d-md-flex row my-1"
@@ -141,5 +140,4 @@ const hotel = computed(() => {
 
 const firstDay = computed(() => props.day.number === 1);
 const lastDay = computed(() => props.nextDay == null);
-// const intermediateDay = computed(() => !firstDay.value && !lastDay.value); // kept (even if unused)
 </script>

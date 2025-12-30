@@ -1,35 +1,27 @@
-// // stores/wizard.ts
-// import { defineStore } from 'pinia'
-// import * as dateHelper from '~/utils/date'
-
-import { markRaw, type Component } from "vue";
-
-// // components
 import WizardError from "~/components/wizard/00-error.vue";
 import WizardStart from "~/components/wizard/01-start.vue";
 import WizardTransfers from "@@/app/components/wizard/02-transfers.vue";
 import WizardDayByDay from "~/components/wizard/03-day-by-day.vue";
-// import WizardRooming from '~/components/wizard/04_Rooming.vue'
-// import WizardPassengers from '~/components/wizard/05_Passengers.vue'
-// import WizardSummary from '~/components/wizard/06_Summary.vue'
-// import WizardPayment from '~/components/wizard/07_Payment.vue'
-// import WizardThankyou from '~/components/wizard/08_Thankyou.vue'
-
-// import { useStartStore } from '~/stores/start'
-// import { useDayByDayStore } from '~/stores/dayByDay'
-// import { useCountyProductsStore } from '~/stores/county-products'
+import WizardRooming from "~/components/wizard/04-rooming.vue";
+import WizardPassengers from "~/components/wizard/05-passengers.vue";
+import WizardSummary from "~/components/wizard/06-summary.vue";
+import WizardPayment from "~/components/wizard/07-payment.vue";
 
 const WIZARD_COMPONENTS = [
 	markRaw(WizardStart),
 	markRaw(WizardTransfers),
 	markRaw(WizardDayByDay),
+	markRaw(WizardRooming),
+	markRaw(WizardPassengers),
+	markRaw(WizardSummary),
+	markRaw(WizardPayment),
 ] as const satisfies readonly [Component, ...Component[]];
 
 const ERROR_COMPONENT: Component = markRaw(WizardError);
 
 type WizardState = {
 	fatalError: boolean;
-	wizardStep: number; // 1-based
+	wizardStep: number;
 	wizardLabels: string[];
 };
 
@@ -87,15 +79,12 @@ export const useWizardStore = defineStore("wizard", {
 				});
 			}
 
-			this.wizardStep += this.wizardStep;
+			this.wizardStep += 1;
 			console.log(`this.wizardStep ${this.wizardStep}`, `this.wizardStepIndex ${this.wizardStepIndex}`);
 		},
 
 		setFatalError(payload?: any) {
-			//   this.setFatalErrorMutation()
 			this.fatalError = true;
-
-			// axios error logging (same as Vuex)
 			if (payload) {
 				if (payload.response) {
 					console.log(payload.response.data);
@@ -109,12 +98,6 @@ export const useWizardStore = defineStore("wizard", {
 					console.log("Error", payload.message);
 				}
 			}
-
-			// log day-by-day data
-			//   const dayByDay = useDayByDayStore()
-			//   if (dayByDay.days) {
-			//     console.log('Day-by-day Data', dayByDay.days)
-			//   }
 		},
 	},
 });

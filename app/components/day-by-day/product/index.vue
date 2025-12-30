@@ -1,7 +1,6 @@
 <template>
 	<div class="d-flex col-12 col-md-4 mb-3">
 		<div class="card mx-1">
-			<!-- Image Cap -->
 			<img
 				v-if="image"
 				:src="image.url"
@@ -35,12 +34,9 @@
 				>Image unavailable</text>
 			</svg>
 
-			<!-- Header -->
 			<h5 class="card-header">
 				{{ header }}
 			</h5>
-
-			<!-- Card Body -->
 			<div class="card-body">
 				<div class="row border-bottom">
 					<div class="col">
@@ -59,15 +55,13 @@
 								>
 									{{ product.rating }}
 								</span>
-
-								<!-- Replace old <b-icon> with FontAwesome (consistent with your other code) -->
-								<!-- <font-awesome-icon
+								<Icon
 									v-for="(k, index) in iconKinds"
 									:key="index"
-									:icon="k === 'star' ? ['fas', 'star'] : ['fas', 'euro-sign']"
+									:name="k === 'star' ? 'i-fa7-solid:star' : 'i-fa7-solid:euro-sign'"
 									style="color: #FFD700;"
 									:aria-label="String(product.rating || '')"
-								/> -->
+								/>
 								<br>
 							</div>
 						</div>
@@ -79,18 +73,12 @@
 				</p>
 			</div>
 
-			<!-- Card Footer -->
 			<div class="card-footer">
 				<div
 					v-if="product.productCode === 'REST'"
 					class="input-group justify-content-between align-items-center"
 				>
-					<!-- <font-awesome-icon
-						class="fa-lg"
-						:icon="['fas', 'clock']"
-						aria-label="Reservation time"
-					/> -->
-
+					<Icon name="i-fa7-solid:clock" />
 					<button
 						v-for="restaurantTime in restaurantTimes"
 						:key="restaurantTime"
@@ -125,11 +113,10 @@ type Product = {
 	productId: number;
 	title?: string;
 	description?: string;
-	productCode?: string; // HTL / EXCR / TRA / REST / etc
+	productCode?: string;
 	rating?: string;
 	images?: ProductImage[];
 
-	// in your migrated mapping, fromCity may be a string. In old it was object.
 	fromCity?: any;
 };
 
@@ -138,12 +125,8 @@ const props = defineProps<{
 	productType: string;
 }>();
 
-// Pinia option store (your dayByDay store)
 const dayByDay = useDayByDayStore();
 const restaurantTimes = computed(() => dayByDay.restaurantTimes);
-
-// Mitt event bus (see composable below)
-// const bus = useEventBus();
 
 const header = computed(() => String(props.product.title ?? ""));
 const description = computed(() => String(props.product.description ?? ""));
@@ -159,21 +142,15 @@ const image = computed<ProductImage | null>(() => {
 	return null;
 });
 
-/**
- * Instead of pushing to data() in created(), compute it.
- * We return an array like ["star","star"] or ["euro","euro"].
- */
 const iconKinds = computed<Array<"star" | "euro">>(() => {
 	const code = String(props.product.productCode ?? "");
 	const rating = String(props.product.rating ?? "");
 
-	// HTL => stars if rating like "3 Star ..."
 	if (code === "HTL" && starRegex.test(rating)) {
 		const n = Number.parseInt(rating.substring(0, 1), 10);
 		return Array.from({ length: Number.isFinite(n) ? n : 0 }, () => "star");
 	}
 
-	// EXCR/TRA => euros by tier
 	if (code === "EXCR" || code === "TRA") {
 		const repeats
 			= rating === "Premium"
@@ -189,12 +166,6 @@ const iconKinds = computed<Array<"star" | "euro">>(() => {
 
 	return [];
 });
-
-// function addButtonClicked(productId: number, productTime?: string) {
-// 	// Mirror Vue2 behaviour: eventBus.addProduct(productId, productTime?)
-// 	// bus.emit("addProduct", { productId, productTime });
-// 	console.log(productId, productTime);
-// }
 
 const bookingBus = useBookingBusStore();
 function addButtonClicked(productId: number, productTime?: string) {

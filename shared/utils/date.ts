@@ -14,7 +14,6 @@ export function dateDiffNights(date1: Date, date2: Date) {
 }
 
 export function addDays(date: Date, days: number) {
-	// add days to the date
 	const result = new Date(date);
 	result.setDate(result.getDate() + days);
 
@@ -29,14 +28,11 @@ export function addSeconds(date: string, seconds: number) {
 }
 
 export function addDatePickerDays(date: string, days: number) {
-	// coerce ISO formated date string to date object
 	const current = new Date(date);
 
-	// add days to the date
 	const result = new Date(current);
 	result.setDate(current.getDate() + days);
 
-	// coerce the date object back to an ISO formatted date string
 	return toISODateString(result);
 }
 

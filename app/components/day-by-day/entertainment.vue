@@ -87,14 +87,10 @@ const title = computed(() => {
 const isEditable = computed(() => !props.readOnly && !firstDay.value && !props.lastDay);
 const hasExcursion = computed(() => props.excursion != null);
 
-// Replace Vue2 eventBus with composable event bus
-// const { selectProduct: emitSelectProduct } = useWizardEvents();
-
 const dayByDay = useDayByDayStore();
 
 const bookingBus = useBookingBusStore();
 function selectProduct(dayNo: number, productType: string) {
-	// console.log(dayNo, productType);
 	bookingBus.requestSelectProduct(dayNo, productType);
 }
 

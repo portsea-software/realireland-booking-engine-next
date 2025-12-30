@@ -16,20 +16,15 @@ export const fetchAppToken = async () => {
 	formData.append("client_id", clientId);
 	formData.append("client_secret", clientSecret);
 
-	console.log(grantType, clientId, clientSecret);
-
 	await $fetch<AccessToken>(`${authTokenUrl}/connect/token`, {
 		method: "POST",
 		body: formData.toString(),
 		headers: {
-			"Content-Type": "application/x-www-form-urlencoded", // the crucial bit
+			"Content-Type": "application/x-www-form-urlencoded",
 		},
 	}).then(async (res) => {
-		console.log("res", res);
 		await setServerStorageItem<AccessToken>(APP_TOKEN_KEY, res);
 	}).catch((err) => {
-		// const updatedError = handleError(err);
-		// throw createError(updatedError);
 		console.log("Error", err);
 	});
 };

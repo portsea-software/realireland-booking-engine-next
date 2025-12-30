@@ -87,15 +87,10 @@ const title = computed(() => {
 const isEditable = computed(() => !props.readOnly && !firstDay.value && !props.lastDay);
 const hasExcursion = computed(() => props.excursion != null);
 
-// event bus replacement
-// const { selectProduct: emitSelectProduct } = useWizardEvents();
-
-// day-by-day store action replacement for removeProduct
 const dayByDay = useDayByDayStore();
 
 const bookingBus = useBookingBusStore();
 function selectProduct(dayNo: number, productType: string) {
-	// console.log(dayNo, productType);
 	bookingBus.requestSelectProduct(dayNo, productType);
 }
 

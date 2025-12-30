@@ -39,6 +39,7 @@ export const useCountyStore = defineStore("CountyStore", {
 	state: () => ({
 		productsLoaded: false,
 		products: [] as Product[],
+		isLoading: false,
 	}),
 
 	getters: {
@@ -95,6 +96,7 @@ export const useCountyStore = defineStore("CountyStore", {
 			this.productsLoaded = false;
 
 			try {
+				this.isLoading = true;
 				const filters = [
 					{
 						ColumnName: "from_county_name",
@@ -215,6 +217,9 @@ export const useCountyStore = defineStore("CountyStore", {
 			catch (error) {
 				console.error("Error in initialiseCountyData:", error);
 				wizard.setFatalError(error);
+			}
+			finally {
+				this.isLoading = false;
 			}
 		},
 	},

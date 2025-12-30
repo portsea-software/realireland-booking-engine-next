@@ -1,12 +1,9 @@
-// default airport to use for transfers pricing if none specified
 const defaultAirport = "Dublin Airport";
 const defaultAirportCity = "DUB";
 
-// transfer to information to use for all bookings
 const traiToCity = "DONE";
 const traiPartialToPoint = "<nextacc>";
 
-// transfer from information to use for all bookings
 const traoFromCity = "DONE";
 const traoPartialFromPoint = "<previousacc>";
 
@@ -186,9 +183,7 @@ export const useTransfersStore = defineStore("transfers", {
 							return (
 								t.fromCity.cityCode === traoFromCity
 								&& String(t.fromPoint ?? "").toLowerCase().includes(traoPartialFromPoint)
-								// ⚠️ preserved from your Vuex: it compares to inboundAirport.cityId (likely bug)
 								&& t.toCity.cityId === this.inboundAirport?.cityId
-								// ⚠️ preserved from your Vuex: it uses inboundAirport.name (likely bug, probably outboundAirport)
 								&& t.toPoint === String(this.inboundAirport?.name ?? "").substring(0, 20)
 							);
 						}) ?? null;

@@ -8,7 +8,6 @@
 
 		<div class="row">
 			<div class="col">
-				<!-- <pre>{{ days }}</pre> -->
 				<daybyday
 					v-for="(day, index) in days"
 					:key="day.number"

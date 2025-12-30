@@ -39,9 +39,6 @@ const props = withDefaults(
 
 const showButton = computed(() => {
 	if (props.readOnly) return false;
-
-	// Vue2 logic preserved:
-	// show if (day 1 and no hotel) OR (hotel exists)
 	if ((props.dayNumber === 1 && props.hotel == null) || props.hotel != null) {
 		return true;
 	}
@@ -55,12 +52,8 @@ const buttonCaption = computed(() => {
 	return props.dayNumber === 1 && props.hotel == null ? "Add Hotel" : "Change";
 });
 
-// replace Vue2 eventBus
-// const { selectProduct: emitSelectProduct } = useWizardEvents();
-
 const bookingBus = useBookingBusStore();
 function selectProduct(dayNo: number, productType: string) {
-	// console.log(dayNo, productType);
 	bookingBus.requestSelectProduct(dayNo, productType);
 }
 </script>

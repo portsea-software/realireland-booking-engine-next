@@ -63,7 +63,8 @@ export const useDayByDayStore = defineStore("dayByDay", {
 
 	getters: {
 		getCountyHotels() {
-			return useCountyStore().getCountyHotels;
+			const county = useCountyStore();
+			return county.getCountyHotels;
 		},
 		getCountyExcursions() {
 			return useCountyStore().getCountyExcursions;
@@ -90,10 +91,10 @@ export const useDayByDayStore = defineStore("dayByDay", {
 			return this.getCountyHotels.find((htl: any) => htl.productId === this.days[index]?.hotelId) ?? null;
 		},
 
-		getSelectedHotels(): any[] {
+		getSelectedHotels() {
 			const hotelIds = [...new Set(this.days.map(d => d.hotelId))].filter(id => id > 0);
+			// @ts-expect-error: It's fine
 			const selectedHotels = this.getCountyHotels.filter((htl: any) => hotelIds.includes(htl.productId));
-			console.log("selectedHotels", selectedHotels);
 			return selectedHotels;
 		},
 

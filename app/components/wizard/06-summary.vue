@@ -8,6 +8,9 @@
 			<br>
 			<br>
 			<pre>{{ transferOut }}</pre> -->
+			<pre>
+				{{ rooms }}
+			</pre>
 		</div>
 		<div class="card mt-2">
 			<div class="card-header">
@@ -223,6 +226,7 @@ const transfersStore = useTransfersStore();
 const dayByDayStore = useDayByDayStore();
 const staticStore = useStaticStore();
 const countyStore = useCountyStore();
+const roomsStore = useRoomingStore();
 
 const termsAgreed = ref(false);
 
@@ -277,6 +281,7 @@ const paymentLabel = computed(() => {
 	const p = pricing.value;
 	return p.amountToPay < p.totalPrice ? "DEPOSIT" : "TO PAY TODAY";
 });
+const rooms = computed(() => roomsStore.rooms);
 
 function prevStep() {
 	wizard.wizardStep--;

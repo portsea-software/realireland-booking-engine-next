@@ -29,10 +29,11 @@
 					:ref="el => setRoomRef(room.elementId, el)"
 					:product-id="hotel.productId"
 					:room="room"
-					:passengers-to-room="passengersToRoom"
+					:all-passengers="allPassengers"
+					:assigned-passenger-ids="assignedPassengerIds"
 					:room-number="index + 1"
-					@add-room="addRoomHandler"
-					@remove-room="removeRoomHandler"
+					@add-passenger="addPassengerHandler"
+					@remove-passenger="removePassengerHandler"
 					@grade-set="gradeSetHandler"
 					@on-validate="validate"
 				/>
@@ -42,28 +43,35 @@
 </template>
 
 <script setup lang="ts">
-type RoomingRoomState = {
-	productId: number;
-	elementId: number;
-	gradeId: number;
-	passengersInRoom: number[];
-};
+import type { Passenger } from "~~/shared/types";
 
 const rooming = useRoomingStore();
+const passengersStore = usePassengersStore();
 
 const props = defineProps<{
 	hotel: CompleteHotel;
 	totalPassengers: number;
 }>();
 
-const passengersToRoom = ref<number>(props.totalPassengers);
 const isValid = ref(true);
+
+const allPassengers = computed<Passenger[]>(() => {
+	return passengersStore.passengers.filter(p => p.age === "ADL" || p.age === "CHD");
+});
+
+const assignedPassengerIds = computed<number[]>(() => {
+	return rooming.getAssignedPassengerIds(props.hotel.productId);
+});
+
+const passengersToRoom = computed(() => {
+	return props.totalPassengers - assignedPassengerIds.value.length;
+});
 
 const rooms = computed(() => {
 	return (props.hotel.rooms ?? []).filter(r => r.minOccupancy <= props.totalPassengers);
 });
 
-const roomedPassengers = computed(() => props.totalPassengers - passengersToRoom.value);
+const roomedPassengers = computed(() => assignedPassengerIds.value.length);
 
 type RoomChildRef = { validate?: () => Promise<boolean> | boolean } | null;
 const roomRefs = ref(new Map<number, RoomChildRef>());
@@ -72,23 +80,20 @@ function setRoomRef(elementId: number, el: any) {
 	roomRefs.value.set(elementId, el ?? null);
 }
 
-function addRoomHandler(elementId: number, gradeId: number, numberOfPassengers: number) {
-	passengersToRoom.value -= numberOfPassengers;
-
-	rooming.addHotelRoom({
+function addPassengerHandler(elementId: number, gradeId: number, passengerId: number) {
+	rooming.addPassengerToRoom({
 		productId: props.hotel.productId,
 		elementId,
 		gradeId,
-		numberOfPassengers,
+		passengerId,
 	});
 }
 
-function removeRoomHandler(elementId: number, numberOfPassengers: number) {
-	passengersToRoom.value += numberOfPassengers;
-
-	rooming.removeHotelRoom({
+function removePassengerHandler(elementId: number, passengerId: number) {
+	rooming.removePassengerFromRoom({
 		productId: props.hotel.productId,
 		elementId,
+		passengerId,
 	});
 }
 
@@ -117,15 +122,4 @@ async function validate() {
 }
 
 defineExpose({ validate, roomedPassengers });
-
-onMounted(() => {
-	const existing = (rooming.rooms as RoomingRoomState[]).filter(
-		r => r.productId === props.hotel.productId,
-	);
-
-	for (const r of existing) {
-		const sum = (r.passengersInRoom ?? []).reduce((a, b) => a + b, 0);
-		passengersToRoom.value -= sum;
-	}
-});
 </script>

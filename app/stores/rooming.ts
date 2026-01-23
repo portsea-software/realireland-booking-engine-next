@@ -1,35 +1,4 @@
-import type { CompleteHotel, Tariff } from "~~/shared/types";
-
-type RoomStateItem = {
-	productId: number;
-	elementId: number;
-	gradeId: number;
-	passengersInRoom: number[];
-};
-
-type AddHotelRoomPayload = {
-	productId: number;
-	elementId: number;
-	gradeId: number;
-	numberOfPassengers: number;
-};
-
-type RemoveHotelRoomPayload = {
-	productId: number;
-	elementId: number;
-};
-
-type SetHotelGradePayload = {
-	productId: number;
-	elementId: number;
-	gradeId: number;
-};
-
-type Hotel = {
-	productId: number;
-	title: string;
-	tariffs: Tariff[];
-};
+import type { CompleteHotel, ProductHotel, RoomStateItem, AddPassengerToRoomPayload, RemovePassengerFromRoomPayload, SetHotelGradePayload } from "~~/shared/types";
 
 export const useRoomingStore = defineStore("rooming", {
 	state: () => ({
@@ -42,9 +11,9 @@ export const useRoomingStore = defineStore("rooming", {
 			return passengers.getPassengersToRoom;
 		},
 
-		getSelectedHotels(): Hotel[] {
+		getSelectedHotels(): ProductHotel[] {
 			const dayByDay = useDayByDayStore();
-			return (dayByDay.getSelectedHotels ?? []) as Hotel[];
+			return (dayByDay.getSelectedHotels ?? []) as ProductHotel[];
 		},
 
 		getEveryoneHasARoom(state): boolean {
@@ -52,7 +21,6 @@ export const useRoomingStore = defineStore("rooming", {
 
 			const totalPassengers = this.getPassengersToRoom;
 			const hotels = this.getSelectedHotels;
-			const sumReducer = (acc: number, cur: number) => acc + cur;
 
 			for (let i = 0; i < hotels.length; i++) {
 				const hotelRooms = state.rooms.filter(r => r.productId === hotels[i]?.productId);
@@ -62,13 +30,20 @@ export const useRoomingStore = defineStore("rooming", {
 
 				// total passengers allocated in this hotel's rooms
 				const passengersInHotel = hotelRooms
-					.flatMap(r => r.passengersInRoom)
-					.reduce(sumReducer, 0);
+					.flatMap(r => r.passengerIds)
+					.length;
 
 				if (passengersInHotel !== totalPassengers) return false;
 			}
 
 			return true;
+		},
+
+		getAssignedPassengerIds: (state) => {
+			return (productId: number) =>
+				state.rooms
+					.filter(room => room.productId === productId)
+					.flatMap(room => room.passengerIds);
 		},
 
 		getRoomById: (state) => {
@@ -78,8 +53,6 @@ export const useRoomingStore = defineStore("rooming", {
 
 		getHotelRoomTypes(): CompleteHotel[] {
 			const hotels = this.getSelectedHotels;
-			// const hotelRoomTypes: any[] = [];
-
 			const mappedHotels = hotels.map((hotel) => {
 				return {
 					productId: hotel.productId,
@@ -87,52 +60,20 @@ export const useRoomingStore = defineStore("rooming", {
 					rooms: hotel.tariffs,
 				};
 			});
-
-			console.log(mappedHotels);
-
 			return mappedHotels;
-
-			// hotels.forEach((hotel) => {
-			// const hotelRooms = {
-			// 	productId: hotel.productId,
-			// 	title: hotel.title,
-			// 	rooms: [] as Tariff[],
-			// };
-
-			// hotel.tariffs.forEach((tariff) => {
-			// 	const room = hotelRooms.rooms.find((r: any) => r.elementId === tariff.elementId);
-
-			// 	if (!room) {
-			// 		hotelRooms.rooms.push({
-			// 			elementId: tariff.elementId,
-			// 			element: tariff.title,
-			// 			grades: [{ gradeId: tariff.gradeId, grade: tariff.grade }],
-			// 			min: tariff.minOccupancy,
-			// 			max: tariff.maxOccupancy,
-			// 		});
-			// 	}
-			// 	else {
-			// 		room.grades.push({ gradeId: tariff.gradeId, grade: tariff.grade });
-			// 	}
-			// });
-
-			// hotelRoomTypes.push(hotelRooms);
-			// });
-
-			// return hotelRoomTypes;
 		},
 	},
 
 	actions: {
-		addHotelRoom(payload: AddHotelRoomPayload) {
+		addPassengerToRoom(payload: AddPassengerToRoomPayload) {
 			const roomIndex = this.rooms.findIndex(
 				room => room.productId === payload.productId && room.elementId === payload.elementId,
 			);
 
 			if (roomIndex !== -1) {
 				const room = this.rooms[roomIndex];
-				if (room) {
-					room.passengersInRoom.push(payload.numberOfPassengers);
+				if (room && !room.passengerIds.includes(payload.passengerId)) {
+					room.passengerIds.push(payload.passengerId);
 					this.rooms.splice(roomIndex, 1, room);
 				}
 			}
@@ -141,12 +82,12 @@ export const useRoomingStore = defineStore("rooming", {
 					productId: payload.productId,
 					elementId: payload.elementId,
 					gradeId: payload.gradeId,
-					passengersInRoom: [payload.numberOfPassengers],
+					passengerIds: [payload.passengerId],
 				});
 			}
 		},
 
-		removeHotelRoom(payload: RemoveHotelRoomPayload) {
+		removePassengerFromRoom(payload: RemovePassengerFromRoomPayload) {
 			const roomIndex = this.rooms.findIndex(
 				room => room.productId === payload.productId && room.elementId === payload.elementId,
 			);
@@ -155,9 +96,9 @@ export const useRoomingStore = defineStore("rooming", {
 				const room = this.rooms[roomIndex];
 
 				if (room) {
-					room.passengersInRoom.pop();
+					room.passengerIds = room.passengerIds.filter(id => id !== payload.passengerId);
 
-					if (room.passengersInRoom.length === 0) {
+					if (room.passengerIds.length === 0) {
 						this.rooms.splice(roomIndex, 1);
 					}
 					else {

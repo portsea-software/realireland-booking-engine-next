@@ -60,3 +60,35 @@ export type CompleteHotel = {
 	title: string;
 	rooms: Tariff[];
 };
+
+export type RoomStateItem = {
+	productId: number;
+	elementId: number;
+	gradeId: number;
+	passengerIds: number[];
+};
+
+export type AddPassengerToRoomPayload = {
+	productId: number;
+	elementId: number;
+	gradeId: number;
+	passengerId: number;
+};
+
+export type RemovePassengerFromRoomPayload = {
+	productId: number;
+	elementId: number;
+	passengerId: number;
+};
+
+export type SetHotelGradePayload = {
+	productId: number;
+	elementId: number;
+	gradeId: number;
+};
+
+export type ProductHotel = {
+	productId: number;
+	title: string;
+	tariffs: Tariff[];
+};

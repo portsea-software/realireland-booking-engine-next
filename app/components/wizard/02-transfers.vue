@@ -1,5 +1,7 @@
 <template>
 	<div>
+		<!-- <pre>{{ inboundAirport }}</pre>
+		<pre>{{ outboundAirport }}</pre> -->
 		<div
 			v-if="!initialised"
 			class="d-flex justify-content-center mt-4"
@@ -211,13 +213,6 @@ import { required, helpers } from "@vuelidate/validators";
 
 type RequireTransfers = "yes" | "no" | "none";
 
-type Airport = {
-	airportCode: string;
-	airportName: string;
-	cityId: number;
-	[k: string]: any;
-};
-
 const staticStore = useStaticStore();
 const transfersStore = useTransfersStore();
 const wizardStore = useWizardStore();
@@ -268,6 +263,15 @@ function nextStep() {
 		return;
 	}
 
+	transfersStore.handleTransfers();
+	// if(inboundAirport.value){
+	// 	transfersStore.transferIn = {
+	// 		fromCity: inboundAirport.value?.cityCode,
+	// 		fromPoint: inboundAirport.value?.airportName,
+
+	// 	}
+	// }
+
 	wizardStore.nextStep();
 }
 
@@ -279,5 +283,22 @@ defineExpose({ validate });
 
 onMounted(async () => {
 	await staticStore.initAirports();
+});
+
+watch(requireTransfers, (newValue) => {
+	if (newValue === "no" || newValue === "none") {
+		inboundAirport.value = {
+			airportName: "Dublin Airport",
+			airportCode: "DUB",
+			cityCode: "DUB",
+			foreignName: "",
+		};
+		outboundAirport.value = {
+			airportName: "Dublin Airport",
+			airportCode: "DUB",
+			cityCode: "DUB",
+			foreignName: "",
+		};
+	}
 });
 </script>

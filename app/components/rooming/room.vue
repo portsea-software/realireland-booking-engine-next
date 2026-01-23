@@ -4,14 +4,20 @@
 			<div class="card-header">
 				<label
 					id="no-of-rooms"
-					class="form-label"
+					class="form-label mb-0"
 					for="no-of-rooms"
 				>
-					{{ room.element }}
+					Room {{ roomNumber }}
 				</label>
 			</div>
 
 			<div class="card-body">
+				<p class="mb-1">
+					<strong>Room Min Occupency</strong> : {{ room.minOccupancy }}
+				</p>
+				<p class="mb-1">
+					<strong>Room Max Occupency</strong> : {{ room.maxOccupancy }}
+				</p>
 				<input
 					id="no-of-rooms"
 					type="number"
@@ -56,7 +62,7 @@
 							class="form-control-item"
 							:value="grade.gradeId"
 						>
-							{{ grade.gradeId }}
+							{{ grade.title }}
 						</option>
 					</select>
 				</div>
@@ -68,20 +74,13 @@
 <script setup lang="ts">
 import useVuelidate from "@vuelidate/core";
 import { helpers } from "@vuelidate/validators";
-
-type Grade = { gradeId: number; grade?: string };
-type RoomType = {
-	elementId: number;
-	element: string;
-	grades: Grade[];
-	min: number;
-	max: number;
-};
+import type { Room } from "~~/shared/types";
 
 const props = defineProps<{
 	productId: number;
-	room: RoomType;
+	room: Room;
 	passengersToRoom: number;
+	roomNumber: number;
 }>();
 
 const emit = defineEmits<{
@@ -110,17 +109,17 @@ const maxRooms = computed(() => {
 
 	let rooms = actualRooms.value;
 
-	if (props.passengersToRoom >= props.room.min) {
+	if (props.passengersToRoom >= props.room.minOccupancy) {
 		let remainingPassengers = props.passengersToRoom;
 
 		// add one room for all rooms we can fill to the maximum
-		while (remainingPassengers >= props.room.max) {
+		while (remainingPassengers >= props.room.maxOccupancy) {
 			rooms += 1;
-			remainingPassengers -= props.room.max;
+			remainingPassengers -= props.room.maxOccupancy;
 		}
 
 		// add one room if remaining passengers meet the minimum
-		if (remainingPassengers >= props.room.min) {
+		if (remainingPassengers >= props.room.minOccupancy) {
 			rooms += 1;
 		}
 	}
@@ -128,7 +127,7 @@ const maxRooms = computed(() => {
 	return rooms;
 });
 
-const disabled = computed(() => props.room.min > props.passengersToRoom && passengerCount.value === 0);
+const disabled = computed(() => props.room.minOccupancy > props.passengersToRoom && passengerCount.value === 0);
 
 const rules = computed(() => ({
 	numberOfRooms: {
@@ -189,7 +188,7 @@ function onNumberOfRoomsChanged(raw: string) {
 		const max = maxRooms.value;
 
 		while (diff > 0 && max > actualRooms.value) {
-			const passengers = Math.min(props.room.max, props.passengersToRoom);
+			const passengers = Math.min(props.room.maxOccupancy, props.passengersToRoom);
 			passengersInRoom.value.push(passengers);
 			emit("addRoom", props.room.elementId, gradeId.value, passengers);
 			diff--;

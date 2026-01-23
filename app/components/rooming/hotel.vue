@@ -1,5 +1,5 @@
 <template>
-	<div class="card px-0 w-100">
+	<div class="card px-0 w-100 mb-1">
 		<div class="card-header d-flex justify-content-between">
 			<div>
 				<h5 class="mb-0">
@@ -24,12 +24,13 @@
 		<div class="card-body">
 			<div class="row">
 				<rooming-room
-					v-for="room in rooms"
+					v-for="(room, index) in rooms"
 					:key="room.elementId"
 					:ref="el => setRoomRef(room.elementId, el)"
 					:product-id="hotel.productId"
 					:room="room"
 					:passengers-to-room="passengersToRoom"
+					:room-number="index + 1"
 					@add-room="addRoomHandler"
 					@remove-room="removeRoomHandler"
 					@grade-set="gradeSetHandler"
@@ -41,21 +42,6 @@
 </template>
 
 <script setup lang="ts">
-type RoomGrade = { gradeId: number; grade?: string };
-type HotelRoomType = {
-	elementId: number;
-	element: string;
-	grades: RoomGrade[];
-	min: number;
-	max: number;
-};
-
-type Hotel = {
-	productId: number;
-	title: string;
-	rooms: HotelRoomType[];
-};
-
 type RoomingRoomState = {
 	productId: number;
 	elementId: number;
@@ -66,7 +52,7 @@ type RoomingRoomState = {
 const rooming = useRoomingStore();
 
 const props = defineProps<{
-	hotel: Hotel;
+	hotel: CompleteHotel;
 	totalPassengers: number;
 }>();
 
@@ -74,7 +60,7 @@ const passengersToRoom = ref<number>(props.totalPassengers);
 const isValid = ref(true);
 
 const rooms = computed(() => {
-	return (props.hotel.rooms ?? []).filter(r => r.min <= props.totalPassengers);
+	return (props.hotel.rooms ?? []).filter(r => r.minOccupancy <= props.totalPassengers);
 });
 
 const roomedPassengers = computed(() => props.totalPassengers - passengersToRoom.value);

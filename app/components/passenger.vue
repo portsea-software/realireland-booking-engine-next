@@ -27,7 +27,7 @@
 				<div class="input-group mb-3">
 					<select
 						:value="modelValue.title"
-						class="form-control form-select"
+						class="form-control form-select px-3"
 						:class="{ invalid: v$.title.$error }"
 						:disabled="!modelValue.editable"
 						@change="updateField('title', ($event.target as HTMLSelectElement).value)"

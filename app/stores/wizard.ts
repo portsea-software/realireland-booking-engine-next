@@ -2,8 +2,8 @@ import WizardError from "~/components/wizard/00-error.vue";
 import WizardStart from "~/components/wizard/01-start.vue";
 import WizardTransfers from "@@/app/components/wizard/02-transfers.vue";
 import WizardDayByDay from "~/components/wizard/03-day-by-day.vue";
-import WizardRooming from "~/components/wizard/04-rooming.vue";
-import WizardPassengers from "~/components/wizard/05-passengers.vue";
+import WizardPassengers from "~/components/wizard/04-passengers.vue";
+import WizardRooming from "~/components/wizard/05-rooming.vue";
 import WizardSummary from "~/components/wizard/06-summary.vue";
 import WizardPayment from "~/components/wizard/07-payment.vue";
 
@@ -11,8 +11,8 @@ const WIZARD_COMPONENTS = [
 	markRaw(WizardStart),
 	markRaw(WizardTransfers),
 	markRaw(WizardDayByDay),
-	markRaw(WizardRooming),
 	markRaw(WizardPassengers),
+	markRaw(WizardRooming),
 	markRaw(WizardSummary),
 	markRaw(WizardPayment),
 ] as const satisfies readonly [Component, ...Component[]];
@@ -34,8 +34,8 @@ export const useWizardStore = defineStore("wizard", {
 			"Start",
 			"Transfers",
 			"Build",
-			"Rooming",
 			"Passengers",
+			"Rooming",
 			"Summary",
 			"Payment",
 			"Thankyou",
@@ -71,12 +71,15 @@ export const useWizardStore = defineStore("wizard", {
 				const start = useStartStore();
 				const county = useCountyStore();
 
-				await county.initialiseCountyData({
-					countyId: start.selectedCounty?.areaId,
-					countyName: start.selectedCounty?.name,
-					fromDate: start.fromDate,
-					toDate: addDays(start.fromDate, start.noOfNights),
-				});
+				// Fetch only first time
+				if (!county.productsLoaded) {
+					await county.initialiseCountyData({
+						countyId: start.selectedCounty?.areaId,
+						countyName: start.selectedCounty?.name,
+						fromDate: start.fromDate,
+						toDate: addDays(start.fromDate, start.noOfNights),
+					});
+				}
 			}
 
 			this.wizardStep += 1;

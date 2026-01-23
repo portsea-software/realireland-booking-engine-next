@@ -57,12 +57,18 @@ export const useStartStore = defineStore("start", {
 		setFromDate(payload: Date) {
 			if (this.fromDate !== payload) {
 				this.fromDate = payload;
+				// Refetch Products
+				const county = useCountyStore();
+				county.productsLoaded = false;
 			}
 		},
 
 		setNoOfNights(payload: number) {
 			if (this.noOfNights !== payload) {
 				this.noOfNights = payload;
+				// Refetch Products
+				const county = useCountyStore();
+				county.productsLoaded = false;
 			}
 		},
 	},

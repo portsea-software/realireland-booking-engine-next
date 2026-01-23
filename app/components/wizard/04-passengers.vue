@@ -55,6 +55,7 @@ type PassengerChildApi = {
 
 const wizard = useWizardStore();
 const passengersStore = usePassengersStore();
+// const countyStore = useCountyStore();
 
 const passengers = computed<Passenger[]>(() => passengersStore.passengers);
 
@@ -99,6 +100,7 @@ async function nextStep() {
 	const ok = await validateAll();
 	if (!ok) return;
 
+	// await countyStore.fetchProductElementsAndGrades();
 	wizard.nextStep();
 }
 

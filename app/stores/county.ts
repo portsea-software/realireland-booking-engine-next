@@ -1,4 +1,5 @@
-type Tariff = { minOccupancy: number; [k: string]: any };
+import type { Tariff } from "~~/shared/types";
+
 type ProductImage = { imageId: number | string; url: string } | { imageId: number | string; url: null };
 
 export type Product = {
@@ -51,7 +52,7 @@ export const useCountyStore = defineStore("CountyStore", {
 			let hotels = state.products.filter((prod) => {
 				return (
 					prod.productCode === "HTL"
-					&& (prod.tariffs ?? []).findIndex(t => (t?.minOccupancy ?? 0) <= paxToRoom) > -1
+					&& (prod.tariffs ?? []).some(t => (t?.maxOccupancy ?? 0) >= paxToRoom)
 				);
 			});
 
@@ -149,26 +150,10 @@ export const useCountyStore = defineStore("CountyStore", {
 					tariffs: [],
 				}));
 
-				const topProducts = products.slice(0, 20);
-
-				const fromDate = new Date(new Date().setFullYear(new Date().getFullYear() - 100))
-					.toISOString()
-					.split("T")[0];
-
-				const toDate = new Date(new Date().setFullYear(new Date().getFullYear() + 100))
-					.toISOString()
-					.split("T")[0];
-
-				const enrichedTopProducts = await Promise.all(
-					topProducts.map(async (p) => {
+				const productsWithImages = await Promise.all(
+					products.filter(p => ["HTL", "EXCR", "REST"].includes(p.productCode)).map(async (p) => {
 						try {
-							const [imagesRes, pricesRes] = await Promise.all([
-								useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/images`, { method: "GET" }),
-								useApiAppAuth<any>(
-									`api/booking-engine/products/${p.productId}/prices?fromDate=${fromDate}&toDate=${toDate}`,
-									{ method: "GET" },
-								),
-							]);
+							const imagesRes = await useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/images`, { method: "GET" });
 
 							const imageList = imagesRes ?? [];
 
@@ -195,9 +180,7 @@ export const useCountyStore = defineStore("CountyStore", {
 								}),
 							);
 
-							const tariffs = pricesRes?.dates?.[0]?.ages?.[0]?.prices ?? [];
-
-							return { ...p, images, tariffs };
+							return { ...p, images };
 						}
 						catch (err) {
 							console.warn(`Error fetching data for product ${p.productId}:`, err);
@@ -206,12 +189,50 @@ export const useCountyStore = defineStore("CountyStore", {
 					}),
 				);
 
-				const completeProducts = products.map((p) => {
-					const enriched = enrichedTopProducts.find(ep => ep.productId === p.productId);
-					return enriched || p;
-				});
+				const productsWithElementsAndGrades = await Promise.all(
+					products.filter(p => ["HTL"].includes(p.productCode)).map(async (p) => {
+						try {
+							const [elementsRes, gradesRes] = await Promise.all([
+								useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/elements`, { method: "GET" }),
+								useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/grades`, { method: "GET" }),
+							]);
 
-				this.products = completeProducts;
+							const tariffs = elementsRes.map((element: any) => {
+								return {
+									elementId: element.elementId,
+									element: element.title,
+									minOccupancy: element.minOccupancy,
+									maxOccupancy: element.maxOccupancy,
+									code: element.code,
+									defaultCode: element.defaultCode,
+									grades: gradesRes.map((grade: any) => {
+										return {
+											gradeId: grade.gradeId,
+											title: grade.title,
+											code: grade.code,
+											defaultCode: grade.defaultCode,
+										};
+									}),
+								};
+							});
+
+							return { ...p, tariffs };
+						}
+						catch (err) {
+							console.warn(`Error fetching data for product ${p.productId}:`, err);
+							return p;
+						}
+					}),
+				);
+
+				const mappedProductsWithImages = new Map(productsWithImages.map(p => [p.productId, p]));
+				const mappedProductsWithElementsAndGrades = new Map(productsWithElementsAndGrades.map(p => [p.productId, p]));
+
+				this.products = products.map(p => mappedProductsWithImages.get(p.productId) ?? p);
+				this.products = products.map(p => mappedProductsWithElementsAndGrades.get(p.productId) ?? p);
+
+				console.log(this.products);
+
 				this.productsLoaded = true;
 			}
 			catch (error) {
@@ -222,5 +243,47 @@ export const useCountyStore = defineStore("CountyStore", {
 				this.isLoading = false;
 			}
 		},
+
+		// async fetchProductElementsAndGrades() {
+		// 	const wizard = useWizardStore();
+
+		// 	try {
+		// 		this.isLoading = true;
+
+		// 		const enrichedProducts = await Promise.all(
+		// 			this.products.slice(0, 20).map(async (p) => {
+		// 				try {
+		// 					const [productElementsResponse, productGradesResponse] = await Promise.all([
+		// 						useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/elements`, { method: "GET" }),
+		// 						useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/grades`, { method: "GET" }),
+		// 					]);
+
+		// 					console.log(productElementsResponse);
+		// 					console.log(productGradesResponse);
+
+		// 					return { ...p, productElementsResponse, productGradesResponse };
+		// 				}
+		// 				catch (err) {
+		// 					console.warn(`Error fetching data for product ${p.productId}:`, err);
+		// 					return p;
+		// 				}
+		// 			}),
+		// 		);
+
+		// 		const completeProducts = this.products.slice(0, 20).map((p) => {
+		// 			const enriched = enrichedProducts.find(ep => ep.productId === p.productId);
+		// 			return enriched || p;
+		// 		});
+
+		// 		this.products = completeProducts;
+		// 	}
+		// 	catch (error) {
+		// 		console.error("Error in fetch product elements and grades:", error);
+		// 		wizard.setFatalError(error);
+		// 	}
+		// 	finally {
+		// 		this.isLoading = false;
+		// 	}
+		// },
 	},
 });

@@ -1,5 +1,15 @@
 <template>
 	<div>
+		<!-- <pre>
+			{{ days }}
+		</pre> -->
+		<!-- <pre>
+			{{ transfersIn }}
+		</pre>
+		<br>
+		<br>
+		<br>
+		<pre>{{ transferOut }}</pre> -->
 		<div class="row">
 			<h2 class="mx-auto">
 				<strong>Build your holiday</strong>
@@ -92,6 +102,7 @@ type Product = { productId: number; rating?: string; [k: string]: any };
 const dayByDay = useDayByDayStore();
 const county = useCountyStore();
 const wizard = useWizardStore();
+// const transfersStore = useTransfersStore();
 
 const activeDayNo = ref<number>(0);
 const dialogProductType = ref<string>("");
@@ -132,6 +143,9 @@ const dialogProducts = computed(() => {
 	if (dialogProductType.value === "Excursion") return excursions.value;
 	return entertainments.value;
 });
+
+// const transfersIn = computed(() => transfersStore.transferIn);
+// const transferOut = computed(() => transfersStore.transferOut);
 
 function prevStep() {
 	wizard.wizardStep--;

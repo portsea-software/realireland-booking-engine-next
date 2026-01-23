@@ -1,5 +1,14 @@
 <template>
 	<div>
+		<div class="card">
+			<!-- <pre>
+			{{ transfersIn }}
+		</pre>
+			<br>
+			<br>
+			<br>
+			<pre>{{ transferOut }}</pre> -->
+		</div>
 		<div class="card mt-2">
 			<div class="card-header">
 				Your Details
@@ -213,10 +222,25 @@ const startStore = useStartStore();
 const transfersStore = useTransfersStore();
 const dayByDayStore = useDayByDayStore();
 const staticStore = useStaticStore();
+const countyStore = useCountyStore();
 
 const termsAgreed = ref(false);
 
 const days = computed(() => dayByDayStore.days);
+const hotels = computed<Product[]>(() => countyStore.getCountyHotels);
+
+const hotelProducts = computed(() => {
+	// const hotelIds = hotels.value.map(h => h.productId);
+	const dayhotelIds = new Set(days.value.map(d => d.hotelId));
+	const selectedHotels = hotels.value.filter(h => dayhotelIds.has(h.productId));
+
+	return selectedHotels.map((h) => {
+		return {
+			...h,
+			passengerIds: passengers.value.map(p => p.passengerId),
+		};
+	});
+});
 
 const clientName = computed(() => {
 	const c = passengersStore.client;
@@ -230,6 +254,8 @@ const toDate = computed(() => startStore.toDate);
 
 const inboundAirport = computed(() => transfersStore.inboundAirport);
 const outboundAirport = computed(() => transfersStore.outboundAirport);
+// const transfersIn = computed(() => transfersStore.transferIn);
+// const transferOut = computed(() => transfersStore.transferOut);
 
 const calculatedPrice = computed(() => dayByDayStore.calculatedPricing);
 const pricing = computed<Pricing>(() => dayByDayStore.pricing);
@@ -256,7 +282,8 @@ function prevStep() {
 	wizard.wizardStep--;
 }
 
-function nextStep() {
+async function nextStep() {
+	await createBooking();
 	wizard.nextStep();
 }
 
@@ -278,4 +305,76 @@ function closeTerms() {
 onMounted(async () => {
 	await staticStore.initCurrencies();
 });
+
+const client = computed(() => passengersStore.client);
+const isLoading = computed(() => countyStore.isLoading);
+
+async function createBooking() {
+	try {
+		countyStore.isLoading = true;
+		const bookingPayload = {
+			newClient: {
+				name: {
+					title: client.value.title,
+					firstName: client.value.firstName,
+					lastName: client.value.lastName,
+				},
+				address: {
+					addressLine1: "",
+					addressLine2: "",
+					addressLine3: "",
+					city: "",
+					county: "",
+					postcode: "",
+					countryCode: "",
+					country: "",
+				},
+				emailAddress: client.value.email,
+				adSourceIds: [1],
+				acquisitionMethodId: 0,
+				phoneNumber: "",
+				clientFields: [],
+				descriptions: [],
+				recordTypeId: 0,
+
+			},
+			bookingTitle: "New Booking",
+			departureDate: fromDate.value.toISOString(),
+			instructions: "",
+			leadTypeId: 0,
+			adSourceId: 1,
+			acquisitionMethodId: 0,
+			brand: "ILT",
+			currency: "EUR",
+			passengers: passengers.value.map((p) => {
+				return {
+					name: {
+						tile: p.title,
+						firstName: p.firstName,
+						lastName: p.lastName,
+					},
+					passengerId: p.passengerId,
+					ageGroup: p.age,
+				};
+			}),
+			products: hotelProducts.value,
+
+		};
+		console.log(bookingPayload);
+
+		const response = await useApiAppAuth<any>(
+			"api/booking-engine/tailor-made/bookings/quick-book",
+			{ method: "POST", body: bookingPayload },
+		);
+		console.log(response);
+		console.log(isLoading.value);
+	}
+	catch (error) {
+		console.error("Error in initialiseCountyData:", error);
+		wizard.setFatalError(error);
+	}
+	finally {
+		countyStore.isLoading = false;
+	}
+}
 </script>

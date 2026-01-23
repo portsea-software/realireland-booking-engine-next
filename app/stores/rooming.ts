@@ -1,3 +1,5 @@
+import type { CompleteHotel, Tariff } from "~~/shared/types";
+
 type RoomStateItem = {
 	productId: number;
 	elementId: number;
@@ -21,15 +23,6 @@ type SetHotelGradePayload = {
 	productId: number;
 	elementId: number;
 	gradeId: number;
-};
-
-type Tariff = {
-	elementId: number;
-	element: string;
-	gradeId: number;
-	grade: string;
-	minOccupancy: number;
-	maxOccupancy: number;
 };
 
 type Hotel = {
@@ -83,48 +76,50 @@ export const useRoomingStore = defineStore("rooming", {
 				state.rooms.find(room => room.productId === productId && room.elementId === elementId);
 		},
 
-		getHotelRoomTypes(): Array<{
-			productId: number;
-			title: string;
-			rooms: Array<{
-				elementId: number;
-				element: string;
-				grades: Array<{ gradeId: number; grade: string }>;
-				min: number;
-				max: number;
-			}>;
-		}> {
+		getHotelRoomTypes(): CompleteHotel[] {
 			const hotels = this.getSelectedHotels;
-			const hotelRoomTypes: any[] = [];
+			// const hotelRoomTypes: any[] = [];
 
-			hotels.forEach((hotel) => {
-				const hotelRooms = {
+			const mappedHotels = hotels.map((hotel) => {
+				return {
 					productId: hotel.productId,
 					title: hotel.title,
-					rooms: [] as any[],
+					rooms: hotel.tariffs,
 				};
-
-				hotel.tariffs.forEach((tariff) => {
-					const room = hotelRooms.rooms.find((r: any) => r.elementId === tariff.elementId);
-
-					if (!room) {
-						hotelRooms.rooms.push({
-							elementId: tariff.elementId,
-							element: tariff.element,
-							grades: [{ gradeId: tariff.gradeId, grade: tariff.grade }],
-							min: tariff.minOccupancy,
-							max: tariff.maxOccupancy,
-						});
-					}
-					else {
-						room.grades.push({ gradeId: tariff.gradeId, grade: tariff.grade });
-					}
-				});
-
-				hotelRoomTypes.push(hotelRooms);
 			});
 
-			return hotelRoomTypes;
+			console.log(mappedHotels);
+
+			return mappedHotels;
+
+			// hotels.forEach((hotel) => {
+			// const hotelRooms = {
+			// 	productId: hotel.productId,
+			// 	title: hotel.title,
+			// 	rooms: [] as Tariff[],
+			// };
+
+			// hotel.tariffs.forEach((tariff) => {
+			// 	const room = hotelRooms.rooms.find((r: any) => r.elementId === tariff.elementId);
+
+			// 	if (!room) {
+			// 		hotelRooms.rooms.push({
+			// 			elementId: tariff.elementId,
+			// 			element: tariff.title,
+			// 			grades: [{ gradeId: tariff.gradeId, grade: tariff.grade }],
+			// 			min: tariff.minOccupancy,
+			// 			max: tariff.maxOccupancy,
+			// 		});
+			// 	}
+			// 	else {
+			// 		room.grades.push({ gradeId: tariff.gradeId, grade: tariff.grade });
+			// 	}
+			// });
+
+			// hotelRoomTypes.push(hotelRooms);
+			// });
+
+			// return hotelRoomTypes;
 		},
 	},
 

@@ -11,6 +11,7 @@
 			</div>
 		</div>
 
+		<!-- <pre>{{ roomTypes }}</pre> -->
 		<div class="row">
 			<RoomingHotel
 				v-for="hotel in roomTypes"
@@ -51,14 +52,15 @@
 
 <script setup lang="ts">
 const wizard = useWizardStore();
-const passengers = usePassengersStore();
+const passengersStore = usePassengersStore();
 const rooming = useRoomingStore();
 
 const showWarningMessage = ref(false);
 
 const roomTypes = computed(() => rooming.getHotelRoomTypes);
-const totalPassengers = computed(() => passengers.getPassengersToRoom);
+const totalPassengers = computed(() => passengersStore.getPassengersToRoom);
 const everyoneHasARoom = computed(() => rooming.getEveryoneHasARoom);
+// const passengers = computed(() => passengersStore.passengers);
 
 type HotelChildApi = { validate?: () => Promise<boolean> | boolean; isValid?: boolean } | null;
 

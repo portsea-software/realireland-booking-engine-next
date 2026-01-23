@@ -1,26 +1,24 @@
+import type { Airport } from "~~/shared/types";
+
 const defaultAirport = "Dublin Airport";
 const defaultAirportCity = "DUB";
 
-const traiToCity = "DONE";
+const traiToCity = "DNG";
 const traiPartialToPoint = "<nextacc>";
 
-const traoFromCity = "DONE";
+const traoFromCity = "DNG";
 const traoPartialFromPoint = "<previousacc>";
 
 type RequireTransfers = "yes" | "no" | "none";
 
-type Airport = {
-	cityId: number;
-	cityCode?: string;
-	name?: string;
-	airportName?: string;
-	[k: string]: any;
-};
-
 type TransferProduct = {
 	productId: number;
-	fromCity: { cityId: number; cityCode: string };
-	toCity: { cityId: number; cityCode: string };
+	// fromCity: { cityId: number; cityCode: string };
+	// toCity: { cityId: number; cityCode: string };
+	fromCity: string;
+	toCity: string;
+	fromCityCode: string;
+	toCityCode: string;
 	fromPoint: string;
 	toPoint: string;
 	[k: string]: any;
@@ -29,8 +27,8 @@ type TransferProduct = {
 export const useTransfersStore = defineStore("transfers", {
 	state: () => ({
 		requireTransfers: "yes" as RequireTransfers,
-		inboundAirport: null as Airport | null,
-		outboundAirport: null as Airport | null,
+		inboundAirport: { airportCode: "CFN", cityCode: "DON", airportName: "Donegal Airport", foreignName: "" } as Airport | null,
+		outboundAirport: { airportCode: "DUB", cityCode: "DUB", airportName: "Dublin Airport", foreignName: "" } as Airport | null,
 		transferIn: null as TransferProduct | null,
 		transferOut: null as TransferProduct | null,
 	}),
@@ -81,9 +79,9 @@ export const useTransfersStore = defineStore("transfers", {
 		getFallbackTrai(): TransferProduct | undefined {
 			return this.getCountyTransfersIn.find((t) => {
 				return (
-					t.fromCity.cityCode === defaultAirportCity
+					t.fromCityCode === defaultAirportCity
 					&& t.fromPoint === defaultAirport.substring(0, 20)
-					&& t.toCity.cityCode === traiToCity
+					&& t.toCityCode === traiToCity
 					&& String(t.toPoint ?? "").toLowerCase().includes(traiPartialToPoint)
 				);
 			});
@@ -121,9 +119,9 @@ export const useTransfersStore = defineStore("transfers", {
 		getFallbackTrao(): TransferProduct | undefined {
 			return this.getCountyTransfersOut.find((t) => {
 				return (
-					t.fromCity.cityCode === traoFromCity
+					t.fromCityCode === traoFromCity
 					&& String(t.fromPoint ?? "").toLowerCase().includes(traoPartialFromPoint)
-					&& t.toCity.cityCode === defaultAirportCity
+					&& t.toCityCode === defaultAirportCity
 					&& t.toPoint === defaultAirport.substring(0, 20)
 				);
 			});
@@ -168,10 +166,16 @@ export const useTransfersStore = defineStore("transfers", {
 				if (this.inboundAirport != null) {
 					trai
 						= this.getCountyTransfersIn.find((t) => {
+							// console.log(t.fromCity, this.inboundAirport?.cityCode);
+							// console.log(t.fromPoint, this.inboundAirport!.airportName);
+							// console.log(t.toPoint, traiPartialToPoint);
+							console.log("trai-within", t);
+							console.log("this.inboundAirport", this.inboundAirport);
+
 							return (
-								t.fromCity.cityId === this.inboundAirport!.cityId
+								t.fromCityCode === this.inboundAirport?.cityCode
 								&& t.fromPoint === String(this.inboundAirport!.airportName ?? "").substring(0, 20)
-								&& t.toCity.cityCode === traiToCity
+								&& t.toCityCode === traiToCity
 								&& String(t.toPoint ?? "").toLowerCase().includes(traiPartialToPoint)
 							);
 						}) ?? null;
@@ -180,11 +184,17 @@ export const useTransfersStore = defineStore("transfers", {
 				if (this.outboundAirport != null) {
 					trao
 						= this.getCountyTransfersOut.find((t) => {
+							// console.log(t.fromCityCode, this.inboundAirport?.cityCode);
+							// console.log(t.fromPoint, this.inboundAirport!.airportName);
+							// console.log(t.toPoint, traiPartialToPoint);
+							console.log("trao-within", t);
+							console.log("this.inboundAirport", this.inboundAirport);
+
 							return (
-								t.fromCity.cityCode === traoFromCity
+								t.fromCityCode === traoFromCity
 								&& String(t.fromPoint ?? "").toLowerCase().includes(traoPartialFromPoint)
-								&& t.toCity.cityId === this.inboundAirport?.cityId
-								&& t.toPoint === String(this.inboundAirport?.name ?? "").substring(0, 20)
+								&& t.toCityCode === this.inboundAirport?.cityCode
+								&& t.toPoint === String(this.inboundAirport?.airportName ?? "").substring(0, 20)
 							);
 						}) ?? null;
 				}
@@ -192,6 +202,41 @@ export const useTransfersStore = defineStore("transfers", {
 
 			if (!trai) trai = this.getFallbackTrai ?? null;
 			if (!trao) trao = this.getFallbackTrao ?? null;
+
+			console.log("trai", trai);
+			console.log("trao", trao);
+
+			this.transferIn = trai;
+			this.transferOut = trao;
+		},
+
+		handleTransfers() {
+			let trai: TransferProduct | null = null;
+			let trao: TransferProduct | null = null;
+
+			if (this.inboundAirport != null) {
+				trai
+					= this.getCountyTransfersIn.find((t) => {
+						return (
+							t.fromCityCode === this.inboundAirport?.cityCode
+							&& t.fromPoint === String(this.inboundAirport!.airportName ?? "").substring(0, 20)
+							&& t.toCityCode === traiToCity
+							&& String(t.toPoint ?? "").toLowerCase().includes(traiPartialToPoint)
+						);
+					}) ?? null;
+			}
+
+			if (this.outboundAirport != null) {
+				trao
+					= this.getCountyTransfersOut.find((t) => {
+						return (
+							t.fromCityCode === traoFromCity
+							&& String(t.fromPoint ?? "").toLowerCase().includes(traoPartialFromPoint)
+							&& t.toCityCode === this.inboundAirport?.cityCode
+							&& t.toPoint === String(this.inboundAirport?.airportName ?? "").substring(0, 20)
+						);
+					}) ?? null;
+			}
 
 			this.transferIn = trai;
 			this.transferOut = trao;

@@ -1,22 +1,23 @@
 <template>
 	<div class="col-xs-12 col-md-6 col-xl-4">
 		<div class="card my-2">
-			<div class="card-header">
+			<div class="card-header d-flex justify-content-between align-items-center">
 				<label
 					class="form-label mb-0"
 				>
-					{{ room.title }} (Room {{ roomNumber }})
+					{{ room.title }}
 				</label>
+				<div class="d-flex">
+					<p class="mb-0">
+						<strong>Min</strong>: {{ room.minOccupancy }}
+					</p>
+					<p class="mb-0 ms-2">
+						<strong>Max</strong>: {{ room.maxOccupancy }}
+					</p>
+				</div>
 			</div>
 
 			<div class="card-body">
-				<p class="mb-1">
-					<strong>Min Occupancy</strong>: {{ room.minOccupancy }}
-				</p>
-				<p class="mb-2">
-					<strong>Max Occupancy</strong>: {{ room.maxOccupancy }}
-				</p>
-
 				<div class="passenger-list">
 					<div
 						v-for="passenger in allPassengers"

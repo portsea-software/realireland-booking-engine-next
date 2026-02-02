@@ -200,7 +200,7 @@ export const useCountyStore = defineStore("CountyStore", {
 							const tariffs = elementsRes.map((element: any) => {
 								return {
 									elementId: element.elementId,
-									element: element.title,
+									title: element.title,
 									minOccupancy: element.minOccupancy,
 									maxOccupancy: element.maxOccupancy,
 									code: element.code,

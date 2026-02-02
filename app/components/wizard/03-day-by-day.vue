@@ -1,15 +1,5 @@
 <template>
 	<div>
-		<!-- <pre>
-			{{ days }}
-		</pre> -->
-		<!-- <pre>
-			{{ transfersIn }}
-		</pre>
-		<br>
-		<br>
-		<br>
-		<pre>{{ transferOut }}</pre> -->
 		<div class="row">
 			<h2 class="mx-auto">
 				<strong>Build your holiday</strong>

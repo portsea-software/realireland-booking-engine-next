@@ -1,16 +1,13 @@
 <template>
 	<div>
 		<div class="card">
-			<!-- <pre>
-			{{ transfersIn }}
-		</pre>
-			<br>
-			<br>
-			<br>
-			<pre>{{ transferOut }}</pre> -->
 			<pre>
 				{{ rooms }}
 			</pre>
+			<!-- <pre>
+				{{ hotelProducts }}
+			</pre> -->
+			<pre>{{ days }}</pre>
 		</div>
 		<div class="card mt-2">
 			<div class="card-header">
@@ -340,8 +337,7 @@ async function createBooking() {
 				phoneNumber: "",
 				clientFields: [],
 				descriptions: [],
-				recordTypeId: 0,
-
+				recordTypeId: 1,
 			},
 			bookingTitle: "New Booking",
 			departureDate: fromDate.value.toISOString(),
@@ -362,7 +358,22 @@ async function createBooking() {
 					ageGroup: p.age,
 				};
 			}),
-			products: hotelProducts.value,
+			// products: hotelProducts.value, // for: transfers + excursion => first one in list for elem+grade
+			// for
+			// products: hotelProducts.value.map(p => {
+			// 	return {
+			// 		productId: p.productId,
+			// 		contractId: p.
+			// 	}
+			// })
+
+			products: rooms.value.map((room) => {
+				return {
+					...room,
+					fromDate: fromDate.value.toISOString(),
+					toDate: fromDate.value.toISOString(),
+				};
+			}),
 
 		};
 		console.log(bookingPayload);

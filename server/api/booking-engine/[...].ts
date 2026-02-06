@@ -1,5 +1,5 @@
 import { joinURL } from "ufo";
-import { getRequestHeader } from "#imports";
+import { getRequestHeader } from "h3";
 
 export default defineEventHandler(async (event) => {
 	const proxyUrl = useRuntimeConfig().public.engineApiBaseUrl;

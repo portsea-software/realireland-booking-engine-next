@@ -87,20 +87,22 @@ export const useWizardStore = defineStore("wizard", {
 		},
 
 		setFatalError(payload?: any) {
-			this.fatalError = true;
-			if (payload) {
-				if (payload.response) {
-					console.log(payload.response.data);
-					console.log(payload.response.status);
-					console.log(payload.response.headers);
-				}
-				else if (payload.request) {
-					console.log(payload.request);
-				}
-				else {
-					console.log("Error", payload.message);
-				}
-			}
+			console.log(payload);
+
+			// this.fatalError = true;
+			// if (payload) {
+			// 	if (payload.response) {
+			// 		console.log(payload.response.data);
+			// 		console.log(payload.response.status);
+			// 		console.log(payload.response.headers);
+			// 	}
+			// 	else if (payload.request) {
+			// 		console.log(payload.request);
+			// 	}
+			// 	else {
+			// 		console.log("Error", payload.message);
+			// 	}
+			// }
 		},
 	},
 });

@@ -84,11 +84,11 @@ export const useBookingStore = defineStore("booking", {
 				// this.bookingFailed = false;
 			}
 			catch (error) {
-				const wizard = useWizardStore();
-				this.bookingFailed = true;
-				wizard.fatalError = true;
-				wizard.setFatalError(error);
-
+				// const wizard = useWizardStore();
+				// this.bookingFailed = true;
+				// wizard.fatalError = true;
+				// wizard.setFatalError(error);
+				console.log(error);
 				throw error;
 			}
 		},

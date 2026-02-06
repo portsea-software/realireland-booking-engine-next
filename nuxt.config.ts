@@ -57,6 +57,14 @@ export default defineNuxtConfig({
 		clientSecret: "",
 	},
 	compatibilityDate: "2025-07-15",
+	nitro: {
+		storage: {
+			real_ireland_booking_engine_cache_data: {
+				driver: "fs",
+				base: "./.data/cache",
+			},
+		},
+	},
 	vite: {
 		define: {
 			"process.env.DEBUG": false,

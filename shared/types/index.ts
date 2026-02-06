@@ -92,3 +92,12 @@ export type ProductHotel = {
 	title: string;
 	tariffs: Tariff[];
 };
+
+export type FormattedProduct = {
+	productId: number;
+	elementId: number;
+	gradeId: number;
+	passengerIds: number[];
+	fromDate: string;
+	toDate: string;
+};

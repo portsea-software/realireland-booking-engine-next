@@ -1,13 +1,16 @@
 <template>
 	<div>
 		<div class="card">
-			<pre>
+			<!-- <pre>
 				{{ rooms }}
-			</pre>
+			</pre> -->
 			<!-- <pre>
 				{{ hotelProducts }}
 			</pre> -->
 			<pre>{{ days }}</pre>
+
+			<!-- <pre>{{ bookingProducts }}</pre> -->
+			<pre>{{ days.map(d => parseDayDate(d.date)) }}</pre>
 		</div>
 		<div class="card mt-2">
 			<div class="card-header">
@@ -209,6 +212,8 @@
 </template>
 
 <script setup lang="ts">
+import type { FormattedProduct } from "~~/shared/types";
+
 type Pricing = {
 	totalPriceFormatted: string;
 	amountToPayFormatted: string;
@@ -279,6 +284,94 @@ const paymentLabel = computed(() => {
 	return p.amountToPay < p.totalPrice ? "DEPOSIT" : "TO PAY TODAY";
 });
 const rooms = computed(() => roomsStore.rooms);
+
+const allPassengerIds = computed(() => passengers.value.map(p => p.passengerId));
+
+const monthMap: Record<string, string> = {
+	January: "01", February: "02", March: "03", April: "04",
+	May: "05", June: "06", July: "07", August: "08",
+	September: "09", October: "10", November: "11", December: "12",
+};
+
+function parseDayDate(dateStr: string): string {
+	const parts = dateStr.split(", ")[1]?.split(" ") as string[];
+	const day = parts[0]?.padStart(2, "0");
+	const month = monthMap[parts[1] as string];
+	const year = parts[2];
+	return `${year}-${month}-${day}`;
+}
+
+function addDays(dateStr: string, numDays: number): string {
+	const [year, month, day] = dateStr.split("-").map(Number);
+	const date = new Date(year as number, month as number - 1, day as number + numDays);
+	const y = date.getFullYear();
+	const m = String(date.getMonth() + 1).padStart(2, "0");
+	const d = String(date.getDate()).padStart(2, "0");
+	return `${y}-${m}-${d}`;
+}
+
+const bookingProducts = computed(() => {
+	const products: Array<FormattedProduct> = [];
+
+	// Get Only dates from days array
+	const dayDates = days.value.map(d => parseDayDate(d.date));
+
+	// Hotels - from rooms with date ranges calculated from days
+	for (const room of rooms.value) {
+		// Find all days where this room's productId matches the hotelId
+		const hotelDayIndices = days.value
+			.map((d, i) => ({ hotelId: d.hotelId, index: i }))
+			.filter(d => d.hotelId === room.productId)
+			.map(d => d.index);
+
+		if (hotelDayIndices.length > 0) {
+			const firstDayIndex = hotelDayIndices[0] as number;
+			const lastDayIndex = hotelDayIndices[hotelDayIndices.length - 1] as number;
+
+			const checkInDate = dayDates[firstDayIndex] as string;
+			const checkOutDate = addDays(dayDates[lastDayIndex] as string, 1);
+
+			products.push({
+				productId: room.productId,
+				elementId: room.elementId,
+				gradeId: room.gradeId,
+				passengerIds: room.passengerIds,
+				fromDate: checkInDate,
+				toDate: checkOutDate,
+			});
+		}
+	}
+
+	// Excursions - from days where excursionId > 0
+	days.value.forEach((day, i) => {
+		if (day.excursionId > 0) {
+			products.push({
+				productId: day.excursionId,
+				elementId: 1,
+				gradeId: 1,
+				passengerIds: allPassengerIds.value,
+				fromDate: dayDates[i] as string,
+				toDate: dayDates[i] as string,
+			});
+		}
+	});
+
+	// Entertainment - from days where entertainmentId > 0
+	days.value.forEach((day, i) => {
+		if (day.entertainmentId > 0) {
+			products.push({
+				productId: day.entertainmentId,
+				elementId: 1,
+				gradeId: 1,
+				passengerIds: allPassengerIds.value,
+				fromDate: dayDates[i] as string,
+				toDate: dayDates[i] as string,
+			});
+		}
+	});
+
+	return products;
+});
 
 function prevStep() {
 	wizard.wizardStep--;
@@ -358,23 +451,7 @@ async function createBooking() {
 					ageGroup: p.age,
 				};
 			}),
-			// products: hotelProducts.value, // for: transfers + excursion => first one in list for elem+grade
-			// for
-			// products: hotelProducts.value.map(p => {
-			// 	return {
-			// 		productId: p.productId,
-			// 		contractId: p.
-			// 	}
-			// })
-
-			products: rooms.value.map((room) => {
-				return {
-					...room,
-					fromDate: fromDate.value.toISOString(),
-					toDate: fromDate.value.toISOString(),
-				};
-			}),
-
+			products: bookingProducts.value,
 		};
 		console.log(bookingPayload);
 
@@ -387,7 +464,7 @@ async function createBooking() {
 	}
 	catch (error) {
 		console.error("Error in initialiseCountyData:", error);
-		wizard.setFatalError(error);
+		// wizard.setFatalError(error);
 	}
 	finally {
 		countyStore.isLoading = false;

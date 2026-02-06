@@ -236,7 +236,7 @@ onMounted(async () => {
 		card.on("change", cardChangeHandler);
 	}
 	catch (err) {
-		bookingStore.bookingFailed = true;
+		// bookingStore.bookingFailed = true;
 		// wizard.setFatalError(err);
 		console.log(err);
 	}

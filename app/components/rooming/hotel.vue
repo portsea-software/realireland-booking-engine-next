@@ -80,11 +80,12 @@ function setRoomRef(elementId: number, el: any) {
 	roomRefs.value.set(elementId, el ?? null);
 }
 
-function addPassengerHandler(elementId: number, gradeId: number, passengerId: number) {
+function addPassengerHandler(elementId: number, gradeId: number, sell: number, passengerId: number) {
 	rooming.addPassengerToRoom({
 		productId: props.hotel.productId,
 		elementId,
 		gradeId,
+		sell,
 		passengerId,
 	});
 }
@@ -97,11 +98,12 @@ function removePassengerHandler(elementId: number, passengerId: number) {
 	});
 }
 
-function gradeSetHandler(elementId: number, gradeId: number) {
+function gradeSetHandler(elementId: number, gradeId: number, sell: number) {
 	rooming.setHotelGrade({
 		productId: props.hotel.productId,
 		elementId,
 		gradeId,
+		sell,
 	});
 }
 

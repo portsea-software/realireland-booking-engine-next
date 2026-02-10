@@ -103,8 +103,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(e: "addPassenger", elementId: number, gradeId: number, passengerId: number): void;
-	(e: "removePassenger" | "gradeSet", elementId: number, passengerId: number): void;
+	(e: "addPassenger", elementId: number, gradeId: number, sell: number, passengerId: number): void;
+	(e: "removePassenger", elementId: number, passengerId: number): void;
+	(e: "gradeSet", elementId: number, gradeId: number, sell: number): void;
 	(e: "onValidate"): void;
 }>();
 
@@ -135,11 +136,15 @@ function getPassengerDisplayName(passenger: Passenger): string {
 	return `Passenger ${passenger.passengerId} (${passenger.age})`;
 }
 
+function getSelectedGradeSell(): number {
+	return props.room.grades.find(g => g.gradeId === gradeId.value)?.sell ?? 0;
+}
+
 function onPassengerToggle(passengerId: number, checked: boolean) {
 	if (checked) {
 		if (!selectedPassengerIds.value.includes(passengerId)) {
 			selectedPassengerIds.value.push(passengerId);
-			emit("addPassenger", props.room.elementId, gradeId.value, passengerId);
+			emit("addPassenger", props.room.elementId, gradeId.value, getSelectedGradeSell(), passengerId);
 		}
 	}
 	else {
@@ -170,7 +175,8 @@ const stateForValidation = computed(() => ({
 const v$ = useVuelidate(rules, stateForValidation);
 
 watch(gradeId, (val) => {
-	emit("gradeSet", props.room.elementId, val);
+	const sell = props.room.grades.find(g => g.gradeId === val)?.sell ?? 0;
+	emit("gradeSet", props.room.elementId, val, sell);
 });
 
 onMounted(() => {

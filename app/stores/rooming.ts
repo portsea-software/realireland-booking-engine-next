@@ -82,6 +82,7 @@ export const useRoomingStore = defineStore("rooming", {
 					productId: payload.productId,
 					elementId: payload.elementId,
 					gradeId: payload.gradeId,
+					sell: payload.sell,
 					passengerIds: [payload.passengerId],
 				});
 			}
@@ -116,6 +117,7 @@ export const useRoomingStore = defineStore("rooming", {
 			if (!room) return;
 
 			room.gradeId = payload.gradeId;
+			room.sell = payload.sell;
 			const index = this.rooms.findIndex(
 				r => r.productId === payload.productId && r.elementId === payload.elementId,
 			);

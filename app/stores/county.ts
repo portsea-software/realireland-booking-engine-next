@@ -1,4 +1,5 @@
-import type { Tariff } from "~~/shared/types";
+import type { Element, Grade, Tariff } from "~~/shared/types";
+import type { ProductPrice } from "~~/shared/types/price";
 
 type ProductImage = { imageId: number | string; url: string } | { imageId: number | string; url: null };
 
@@ -152,11 +153,12 @@ export const useCountyStore = defineStore("CountyStore", {
 					tariffs: [],
 				}));
 
-				const fromDate = new Date(new Date().setFullYear(new Date().getFullYear() - 100))
+				// Current Year + Next 5 Years
+				const fromDate = new Date(new Date().setFullYear(new Date().getFullYear()))
 					.toISOString()
 					.split("T")[0];
 
-				const toDate = new Date(new Date().setFullYear(new Date().getFullYear() + 100))
+				const toDate = new Date(new Date().setFullYear(new Date().getFullYear() + 5))
 					.toISOString()
 					.split("T")[0];
 
@@ -165,27 +167,36 @@ export const useCountyStore = defineStore("CountyStore", {
 					products.filter(p => ["HTL", "EXCR", "REST"].includes(p.productCode)).map(async (p) => {
 						try {
 							const [elementsRes, gradesRes, pricesRes] = await Promise.all([
-								useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/elements`, { method: "GET" }),
-								useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/grades`, { method: "GET" }),
-								useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/prices?fromDate=${fromDate}&toDate=${toDate}`, { method: "GET" }),
+								useApiAppAuth<Element[]>(`api/booking-engine/products/${p.productId}/elements`, { method: "GET" }),
+								useApiAppAuth<Grade[]>(`api/booking-engine/products/${p.productId}/grades`, { method: "GET" }),
+								useApiAppAuth<ProductPrice>(`api/booking-engine/products/${p.productId}/prices?fromDate=${fromDate}&toDate=${toDate}`, { method: "GET" }),
 							]);
 
+							const adlPrices = pricesRes.dates.filter(p => p.ages.filter(a => a.ageGroup === "ADL"));
+
+							// More narrow down based on the arrival date choose by user
+							const filteredPrices = adlPrices.filter((date) => {
+								const fromDate = new Date(date.fromDate);
+								const userSelectedFromDate = new Date(start.fromDate);
+								if (new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate()) <= new Date(userSelectedFromDate.getFullYear(), userSelectedFromDate.getMonth(), userSelectedFromDate.getDate())) {
+									return date;
+								}
+							});
+
+							const prices = filteredPrices[0]?.ages[0]?.prices ?? [];
+
 							// Only create tariffs if the product has prices
-							const hasPrices = Object.keys(pricesRes).length > 0 && pricesRes.dates.length > 0;
+							const hasPrices = Object.keys(prices).length > 0 && prices.length > 0;
 
 							const tariffs = hasPrices
-								? elementsRes.map((element: any) => ({
-										elementId: element.elementId,
-										title: element.title,
-										minOccupancy: element.minOccupancy,
-										maxOccupancy: element.maxOccupancy,
-										code: element.code,
-										defaultCode: element.defaultCode,
-										grades: gradesRes.map((grade: any) => ({
+								? elementsRes.map(element => ({
+										...element,
+										grades: gradesRes.map(grade => ({
 											gradeId: grade.gradeId,
 											title: grade.title,
 											code: grade.code,
 											defaultCode: grade.defaultCode,
+											sell: prices.find(p => p.elementId === element.elementId && p.gradeId === grade.gradeId)?.sell ?? 0,
 										})),
 									}))
 								: [];

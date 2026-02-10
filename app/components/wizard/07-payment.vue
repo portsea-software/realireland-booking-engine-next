@@ -219,7 +219,7 @@ async function submitPayment() {
 
 onMounted(async () => {
 	try {
-		await bookingStore.createAxumBooking();
+		// await bookingStore.createAxumBooking();
 
 		await bookingStore.createPaymentIntent();
 

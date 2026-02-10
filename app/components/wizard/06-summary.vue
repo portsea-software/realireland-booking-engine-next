@@ -3,14 +3,14 @@
 		<div class="card">
 			<!-- <pre>
 				{{ rooms }}
-			</pre> -->
-			<!-- <pre>
+			</pre>
+			<pre>
 				{{ hotelProducts }}
-			</pre> -->
-			<pre>{{ days }}</pre>
+			</pre>
+			<pre>{{ days }}</pre> -->
 
-			<!-- <pre>{{ bookingProducts }}</pre> -->
-			<pre>{{ days.map(d => parseDayDate(d.date)) }}</pre>
+			<pre>{{ bookingProducts }}</pre>
+			<!-- <pre>{{ days.map(d => parseDayDate(d.date)) }}</pre> -->
 		</div>
 		<div class="card mt-2">
 			<div class="card-header">
@@ -335,6 +335,7 @@ const bookingProducts = computed(() => {
 				productId: room.productId,
 				elementId: room.elementId,
 				gradeId: room.gradeId,
+				sell: room.sell,
 				passengerIds: room.passengerIds,
 				fromDate: checkInDate,
 				toDate: checkOutDate,
@@ -345,10 +346,15 @@ const bookingProducts = computed(() => {
 	// Excursions - from days where excursionId > 0
 	days.value.forEach((day, i) => {
 		if (day.excursionId > 0) {
+			const product = countyStore.products.find(p => p.productId === day.excursionId);
+			const tariff = product?.tariffs[0];
+			const grade = tariff?.grades[0];
+
 			products.push({
 				productId: day.excursionId,
-				elementId: 1,
-				gradeId: 1,
+				elementId: tariff?.elementId ?? 1,
+				gradeId: grade?.gradeId ?? 1,
+				sell: grade?.sell ?? 0,
 				passengerIds: allPassengerIds.value,
 				fromDate: dayDates[i] as string,
 				toDate: dayDates[i] as string,
@@ -359,10 +365,15 @@ const bookingProducts = computed(() => {
 	// Entertainment - from days where entertainmentId > 0
 	days.value.forEach((day, i) => {
 		if (day.entertainmentId > 0) {
+			const product = countyStore.products.find(p => p.productId === day.entertainmentId);
+			const tariff = product?.tariffs[0];
+			const grade = tariff?.grades[0];
+
 			products.push({
 				productId: day.entertainmentId,
-				elementId: 1,
-				gradeId: 1,
+				elementId: tariff?.elementId ?? 1,
+				gradeId: grade?.gradeId ?? 1,
+				sell: grade?.sell ?? 0,
 				passengerIds: allPassengerIds.value,
 				fromDate: dayDates[i] as string,
 				toDate: dayDates[i] as string,

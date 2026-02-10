@@ -40,6 +40,7 @@ export type Grade = {
 	title: string;
 	code: number;
 	defaultCode: number;
+	sell: number;
 };
 
 export type Element = {
@@ -49,6 +50,7 @@ export type Element = {
 	maxOccupancy: number;
 	code: number;
 	defaultCode: number;
+	sell: number;
 	grades: Grade[];
 };
 
@@ -65,6 +67,7 @@ export type RoomStateItem = {
 	productId: number;
 	elementId: number;
 	gradeId: number;
+	sell: number;
 	passengerIds: number[];
 };
 
@@ -72,6 +75,7 @@ export type AddPassengerToRoomPayload = {
 	productId: number;
 	elementId: number;
 	gradeId: number;
+	sell: number;
 	passengerId: number;
 };
 
@@ -85,6 +89,7 @@ export type SetHotelGradePayload = {
 	productId: number;
 	elementId: number;
 	gradeId: number;
+	sell: number;
 };
 
 export type ProductHotel = {
@@ -97,6 +102,7 @@ export type FormattedProduct = {
 	productId: number;
 	elementId: number;
 	gradeId: number;
+	sell: number;
 	passengerIds: number[];
 	fromDate: string;
 	toDate: string;

@@ -221,7 +221,13 @@ onMounted(async () => {
 	try {
 		// await bookingStore.createAxumBooking();
 
+		// await bookingStore.createPaymentIntent();
+
+		await bookingStore.fetchBookingInfo();
+
 		await bookingStore.createPaymentIntent();
+
+		await bookingStore.fetchStripePublicKey();
 
 		const { elements } = await getStripeAndElements();
 		card = elements.create("card");

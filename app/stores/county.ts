@@ -26,6 +26,7 @@ export type Product = {
 
 	images: ProductImage[];
 	tariffs: Tariff[];
+	priceBase: string;
 
 	rank?: number;
 };
@@ -151,6 +152,7 @@ export const useCountyStore = defineStore("CountyStore", {
 
 					images: [],
 					tariffs: [],
+					priceBase: "PerPassenger",
 				}));
 
 				// Current Year + Next 5 Years
@@ -201,7 +203,9 @@ export const useCountyStore = defineStore("CountyStore", {
 									}))
 								: [];
 
-							return { ...p, tariffs };
+							const priceBase = filteredPrices[0]?.ages[0]?.priceBase ?? "PerPassenger";
+
+							return { ...p, tariffs, priceBase };
 						}
 						catch (err) {
 							console.warn(`Error fetching tariffs for product ${p.productId}:`, err);

@@ -51,6 +51,9 @@ export default defineNuxtConfig({
 
 			contactEmail: process.env.NUXT_PUBLIC_CONTACT_EMAIL ?? "",
 			contactPhone: process.env.NUXT_PUBLIC_CONTACT_PHONE ?? "",
+
+			brand: process.env.NUXT_PUBLIC_BRAND ?? "",
+
 		},
 		grantType: "",
 		clientId: "",

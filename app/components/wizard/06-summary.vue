@@ -10,6 +10,7 @@
 			<pre>{{ days }}</pre> -->
 
 			<pre>{{ bookingProducts }}</pre>
+			<pre>{{ totalSell }}</pre>
 			<!-- <pre>{{ days.map(d => parseDayDate(d.date)) }}</pre> -->
 		</div>
 		<div class="card mt-2">
@@ -98,15 +99,18 @@
 							TOTAL PRICE
 						</div>
 						<div class="col-auto">
-							{{ pricing.totalPriceFormatted }}
+							<!-- {{ pricing.totalPriceFormatted }}  -->
+							{{ totalSell }}
 						</div>
 					</div>
 					<div class="row justify-content-between">
 						<div class="col-auto">
-							{{ paymentLabel }}
+							<!-- {{ paymentLabel }} -->
+							TO PAY TODAY
 						</div>
 						<div class="col-auto">
-							{{ pricing.amountToPayFormatted }}
+							<!-- {{ pricing.amountToPayFormatted }} -->
+							{{ totalSell }}
 						</div>
 					</div>
 				</template>
@@ -212,41 +216,17 @@
 </template>
 
 <script setup lang="ts">
-import type { FormattedProduct } from "~~/shared/types";
-
-type Pricing = {
-	totalPriceFormatted: string;
-	amountToPayFormatted: string;
-	amountToPay: number;
-	totalPrice: number;
-};
-
 const wizard = useWizardStore();
 const passengersStore = usePassengersStore();
 const startStore = useStartStore();
 const transfersStore = useTransfersStore();
 const dayByDayStore = useDayByDayStore();
 const staticStore = useStaticStore();
-const countyStore = useCountyStore();
-const roomsStore = useRoomingStore();
+const bookingStore = useBookingStore();
 
 const termsAgreed = ref(false);
 
 const days = computed(() => dayByDayStore.days);
-const hotels = computed<Product[]>(() => countyStore.getCountyHotels);
-
-const hotelProducts = computed(() => {
-	// const hotelIds = hotels.value.map(h => h.productId);
-	const dayhotelIds = new Set(days.value.map(d => d.hotelId));
-	const selectedHotels = hotels.value.filter(h => dayhotelIds.has(h.productId));
-
-	return selectedHotels.map((h) => {
-		return {
-			...h,
-			passengerIds: passengers.value.map(p => p.passengerId),
-		};
-	});
-});
 
 const clientName = computed(() => {
 	const c = passengersStore.client;
@@ -260,11 +240,8 @@ const toDate = computed(() => startStore.toDate);
 
 const inboundAirport = computed(() => transfersStore.inboundAirport);
 const outboundAirport = computed(() => transfersStore.outboundAirport);
-// const transfersIn = computed(() => transfersStore.transferIn);
-// const transferOut = computed(() => transfersStore.transferOut);
 
 const calculatedPrice = computed(() => dayByDayStore.calculatedPricing);
-const pricing = computed<Pricing>(() => dayByDayStore.pricing);
 
 const dateOptions = computed(
 	() =>
@@ -279,117 +256,15 @@ const dateOptions = computed(
 const fromDateString = computed(() => fromDate.value?.toLocaleString(undefined, dateOptions.value) ?? "");
 const toDateString = computed(() => toDate.value?.toLocaleString(undefined, dateOptions.value) ?? "");
 
-const paymentLabel = computed(() => {
-	const p = pricing.value;
-	return p.amountToPay < p.totalPrice ? "DEPOSIT" : "TO PAY TODAY";
-});
-const rooms = computed(() => roomsStore.rooms);
-
-const allPassengerIds = computed(() => passengers.value.map(p => p.passengerId));
-
-const monthMap: Record<string, string> = {
-	January: "01", February: "02", March: "03", April: "04",
-	May: "05", June: "06", July: "07", August: "08",
-	September: "09", October: "10", November: "11", December: "12",
-};
-
-function parseDayDate(dateStr: string): string {
-	const parts = dateStr.split(", ")[1]?.split(" ") as string[];
-	const day = parts[0]?.padStart(2, "0");
-	const month = monthMap[parts[1] as string];
-	const year = parts[2];
-	return `${year}-${month}-${day}`;
-}
-
-function addDays(dateStr: string, numDays: number): string {
-	const [year, month, day] = dateStr.split("-").map(Number);
-	const date = new Date(year as number, month as number - 1, day as number + numDays);
-	const y = date.getFullYear();
-	const m = String(date.getMonth() + 1).padStart(2, "0");
-	const d = String(date.getDate()).padStart(2, "0");
-	return `${y}-${m}-${d}`;
-}
-
-const bookingProducts = computed(() => {
-	const products: Array<FormattedProduct> = [];
-
-	// Get Only dates from days array
-	const dayDates = days.value.map(d => parseDayDate(d.date));
-
-	// Hotels - from rooms with date ranges calculated from days
-	for (const room of rooms.value) {
-		// Find all days where this room's productId matches the hotelId
-		const hotelDayIndices = days.value
-			.map((d, i) => ({ hotelId: d.hotelId, index: i }))
-			.filter(d => d.hotelId === room.productId)
-			.map(d => d.index);
-
-		if (hotelDayIndices.length > 0) {
-			const firstDayIndex = hotelDayIndices[0] as number;
-			const lastDayIndex = hotelDayIndices[hotelDayIndices.length - 1] as number;
-
-			const checkInDate = dayDates[firstDayIndex] as string;
-			const checkOutDate = addDays(dayDates[lastDayIndex] as string, 1);
-
-			products.push({
-				productId: room.productId,
-				elementId: room.elementId,
-				gradeId: room.gradeId,
-				sell: room.sell,
-				passengerIds: room.passengerIds,
-				fromDate: checkInDate,
-				toDate: checkOutDate,
-			});
-		}
-	}
-
-	// Excursions - from days where excursionId > 0
-	days.value.forEach((day, i) => {
-		if (day.excursionId > 0) {
-			const product = countyStore.products.find(p => p.productId === day.excursionId);
-			const tariff = product?.tariffs[0];
-			const grade = tariff?.grades[0];
-
-			products.push({
-				productId: day.excursionId,
-				elementId: tariff?.elementId ?? 1,
-				gradeId: grade?.gradeId ?? 1,
-				sell: grade?.sell ?? 0,
-				passengerIds: allPassengerIds.value,
-				fromDate: dayDates[i] as string,
-				toDate: dayDates[i] as string,
-			});
-		}
-	});
-
-	// Entertainment - from days where entertainmentId > 0
-	days.value.forEach((day, i) => {
-		if (day.entertainmentId > 0) {
-			const product = countyStore.products.find(p => p.productId === day.entertainmentId);
-			const tariff = product?.tariffs[0];
-			const grade = tariff?.grades[0];
-
-			products.push({
-				productId: day.entertainmentId,
-				elementId: tariff?.elementId ?? 1,
-				gradeId: grade?.gradeId ?? 1,
-				sell: grade?.sell ?? 0,
-				passengerIds: allPassengerIds.value,
-				fromDate: dayDates[i] as string,
-				toDate: dayDates[i] as string,
-			});
-		}
-	});
-
-	return products;
-});
+const bookingProducts = computed(() => bookingStore.bookingProducts);
+const totalSell = computed(() => bookingStore.totalSell);
 
 function prevStep() {
 	wizard.wizardStep--;
 }
 
 async function nextStep() {
-	await createBooking();
+	await bookingStore.createBooking();
 	wizard.nextStep();
 }
 
@@ -411,74 +286,4 @@ function closeTerms() {
 onMounted(async () => {
 	await staticStore.initCurrencies();
 });
-
-const client = computed(() => passengersStore.client);
-const isLoading = computed(() => countyStore.isLoading);
-
-async function createBooking() {
-	try {
-		countyStore.isLoading = true;
-		const bookingPayload = {
-			newClient: {
-				name: {
-					title: client.value.title,
-					firstName: client.value.firstName,
-					lastName: client.value.lastName,
-				},
-				address: {
-					addressLine1: "",
-					addressLine2: "",
-					addressLine3: "",
-					city: "",
-					county: "",
-					postcode: "",
-					countryCode: "",
-					country: "",
-				},
-				emailAddress: client.value.email,
-				adSourceIds: [1],
-				acquisitionMethodId: 0,
-				phoneNumber: "",
-				clientFields: [],
-				descriptions: [],
-				recordTypeId: 1,
-			},
-			bookingTitle: "New Booking",
-			departureDate: fromDate.value.toISOString(),
-			instructions: "",
-			leadTypeId: 0,
-			adSourceId: 1,
-			acquisitionMethodId: 0,
-			brand: "ILT",
-			currency: "EUR",
-			passengers: passengers.value.map((p) => {
-				return {
-					name: {
-						tile: p.title,
-						firstName: p.firstName,
-						lastName: p.lastName,
-					},
-					passengerId: p.passengerId,
-					ageGroup: p.age,
-				};
-			}),
-			products: bookingProducts.value,
-		};
-		console.log(bookingPayload);
-
-		const response = await useApiAppAuth<any>(
-			"api/booking-engine/tailor-made/bookings/quick-book",
-			{ method: "POST", body: bookingPayload },
-		);
-		console.log(response);
-		console.log(isLoading.value);
-	}
-	catch (error) {
-		console.error("Error in initialiseCountyData:", error);
-		// wizard.setFatalError(error);
-	}
-	finally {
-		countyStore.isLoading = false;
-	}
-}
 </script>

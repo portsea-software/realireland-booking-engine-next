@@ -86,8 +86,7 @@
 
 <script setup lang="ts">
 import daybyday from "~/components/day-by-day/index.vue";
-
-type Product = { productId: number; rating?: string; [k: string]: any };
+import type { Product } from "~~/shared/types";
 
 const dayByDay = useDayByDayStore();
 const county = useCountyStore();

@@ -36,17 +36,7 @@
 </template>
 
 <script setup lang="ts">
-type PassengerAge = "ADL" | "CHD" | "INF";
-
-type Passenger = {
-	passengerId: number;
-	title: string;
-	firstName: string;
-	lastName: string;
-	age: PassengerAge;
-	dietaryRequirements?: string;
-	editable: boolean;
-};
+import type { Passenger } from "~~/shared/types";
 
 type PassengerChildApi = {
 	validate?: () => Promise<boolean> | boolean;
@@ -55,7 +45,6 @@ type PassengerChildApi = {
 
 const wizard = useWizardStore();
 const passengersStore = usePassengersStore();
-// const countyStore = useCountyStore();
 
 const passengers = computed<Passenger[]>(() => passengersStore.passengers);
 
@@ -100,7 +89,6 @@ async function nextStep() {
 	const ok = await validateAll();
 	if (!ok) return;
 
-	// await countyStore.fetchProductElementsAndGrades();
 	wizard.nextStep();
 }
 

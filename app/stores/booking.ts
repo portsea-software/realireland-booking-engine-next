@@ -1,14 +1,6 @@
 import type { FormattedProduct } from "~~/shared/types";
 import type { BookingGroupClientId, Booking } from "~~/shared/types/booking";
 
-// type PaymentIntentPostData = {
-// 	bookingRequestId: number;
-// 	clientEmail: string;
-// 	currency: "EUR";
-// 	amount: number;
-// 	description: string;
-// };
-
 const monthMap: Record<string, string> = {
 	January: "01", February: "02", March: "03", April: "04",
 	May: "05", June: "06", July: "07", August: "08",
@@ -194,15 +186,9 @@ export const useBookingStore = defineStore("booking", {
 
 		getPaymentIntentRequestPostData(s): any {
 			const passengersStore = usePassengersStore();
-			// const dayByDayStore = useDayByDayStore();
+			const { public: { brand } } = useRuntimeConfig();
 
 			return {
-				// bookingRequestId: s.bookingRequestId,
-				// clientEmail: passengersStore.client.email,
-				// currency: "EUR",
-				// amount: this.totalSell,
-				// description: "Your holiday to the Real Ireland",
-
 				bookingId: s.bookingGroupClientId.bookingId,
 				groupId: s.bookingGroupClientId.groupId,
 				clientId: s.bookingGroupClientId.clientId,
@@ -212,6 +198,7 @@ export const useBookingStore = defineStore("booking", {
 				amount: this.totalSell,
 				exchangeRate: 1,
 				description: "Your holiday to the Real Ireland",
+				brandCode: brand,
 			};
 		},
 	},

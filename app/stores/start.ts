@@ -1,6 +1,5 @@
 import { parseDateSafe } from "~~/shared/utils/date";
-
-type County = { areaId: number; name: string };
+import type { County } from "~~/shared/types";
 
 export const useStartStore = defineStore("start", {
 	state: () => {

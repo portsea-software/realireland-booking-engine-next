@@ -51,11 +51,11 @@
 </template>
 
 <script setup lang="ts">
-type Excursion = { title?: string; [k: string]: any };
+import type { Product } from "~~/shared/types";
 
 const props = withDefaults(
 	defineProps<{
-		excursion?: Excursion | null;
+		excursion?: Product | null;
 		dayNumber: number;
 		lastDay: boolean;
 		readOnly?: boolean;

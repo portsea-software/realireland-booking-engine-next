@@ -127,20 +127,7 @@
 <script setup lang="ts">
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-
-type TitleOption = { name: string };
-
-type PassengerAge = "ADL" | "CHD" | "INF";
-
-type Passenger = {
-	passengerId: number;
-	title: string;
-	firstName: string;
-	lastName: string;
-	age: PassengerAge;
-	dietaryRequirements?: string;
-	editable: boolean;
-};
+import type { Passenger, Title } from "~~/shared/types";
 
 const props = defineProps<{
 	modelValue: Passenger;
@@ -153,7 +140,7 @@ const emit = defineEmits<{
 const staticStore = useStaticStore();
 const passengersStore = usePassengersStore();
 
-const titles = computed<TitleOption[]>(() => staticStore.titles);
+const titles = computed<Title[]>(() => staticStore.titles);
 
 const ageRange = computed(() => {
 	if (props.modelValue.age === "INF") return "Infant";

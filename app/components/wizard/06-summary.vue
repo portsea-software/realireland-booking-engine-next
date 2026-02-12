@@ -1,18 +1,5 @@
 <template>
 	<div>
-		<div class="card">
-			<!-- <pre>
-				{{ rooms }}
-			</pre>
-			<pre>
-				{{ hotelProducts }}
-			</pre>
-			<pre>{{ days }}</pre> -->
-
-			<pre>{{ bookingProducts }}</pre>
-			<pre>{{ totalSell }}</pre>
-			<!-- <pre>{{ days.map(d => parseDayDate(d.date)) }}</pre> -->
-		</div>
 		<div class="card mt-2">
 			<div class="card-header">
 				Your Details
@@ -99,18 +86,15 @@
 							TOTAL PRICE
 						</div>
 						<div class="col-auto">
-							<!-- {{ pricing.totalPriceFormatted }}  -->
-							{{ totalSell }}
+							€{{ totalSell }}
 						</div>
 					</div>
 					<div class="row justify-content-between">
 						<div class="col-auto">
-							<!-- {{ paymentLabel }} -->
 							TO PAY TODAY
 						</div>
 						<div class="col-auto">
-							<!-- {{ pricing.amountToPayFormatted }} -->
-							{{ totalSell }}
+							€{{ totalSell }}
 						</div>
 					</div>
 				</template>
@@ -256,7 +240,7 @@ const dateOptions = computed(
 const fromDateString = computed(() => fromDate.value?.toLocaleString(undefined, dateOptions.value) ?? "");
 const toDateString = computed(() => toDate.value?.toLocaleString(undefined, dateOptions.value) ?? "");
 
-const bookingProducts = computed(() => bookingStore.bookingProducts);
+// const bookingProducts = computed(() => bookingStore.bookingProducts);
 const totalSell = computed(() => bookingStore.totalSell);
 
 function prevStep() {

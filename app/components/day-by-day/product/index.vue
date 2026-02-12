@@ -3,7 +3,7 @@
 		<div class="card mx-1">
 			<img
 				v-if="image"
-				:src="image.url"
+				:src="image.url ?? undefined"
 				:alt="image.caption || header"
 				class="card-img-top img-responsive"
 				style="height: 200px;"
@@ -107,19 +107,9 @@
 </template>
 
 <script setup lang="ts">
+import type { Product, ProductImage } from "~~/shared/types";
+
 const starRegex = /^\d\sStar/g;
-
-type ProductImage = { url: string; caption?: string; imageId?: number };
-type Product = {
-	productId: number;
-	title?: string;
-	description?: string;
-	productCode?: string;
-	rating?: string;
-	images?: ProductImage[];
-
-	fromCity?: any;
-};
 
 const props = defineProps<{
 	product: Product;

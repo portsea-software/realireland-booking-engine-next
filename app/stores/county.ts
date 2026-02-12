@@ -1,35 +1,5 @@
-import type { Element, Grade, Tariff } from "~~/shared/types";
+import type { Element, Grade, Product, ProductImage } from "~~/shared/types";
 import type { ProductPrice } from "~~/shared/types/price";
-
-type ProductImage = { imageId: number | string; url: string } | { imageId: number | string; url: null };
-
-export type Product = {
-	productId: number;
-	title: string;
-	productType: string;
-	productCode: string;
-
-	fromCity: string;
-	fromCityCode: string;
-	fromPoint: string;
-	fromTime: string;
-	fromTimeHours: number;
-
-	toCity: string;
-	toCityCode: string;
-	toPoint: string;
-	toTime: string;
-	toTimeHours: number;
-
-	rating: string;
-	description: string;
-
-	images: ProductImage[];
-	tariffs: Tariff[];
-	priceBase: string;
-
-	rank?: number;
-};
 
 type InitCountyPayload = { countyId: number; countyName: string; fromDate: Date; toDate: Date };
 
@@ -273,47 +243,5 @@ export const useCountyStore = defineStore("CountyStore", {
 				this.isLoading = false;
 			}
 		},
-
-		// async fetchProductElementsAndGrades() {
-		// 	const wizard = useWizardStore();
-
-		// 	try {
-		// 		this.isLoading = true;
-
-		// 		const enrichedProducts = await Promise.all(
-		// 			this.products.slice(0, 20).map(async (p) => {
-		// 				try {
-		// 					const [productElementsResponse, productGradesResponse] = await Promise.all([
-		// 						useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/elements`, { method: "GET" }),
-		// 						useApiAppAuth<any>(`api/booking-engine/products/${p.productId}/grades`, { method: "GET" }),
-		// 					]);
-
-		// 					console.log(productElementsResponse);
-		// 					console.log(productGradesResponse);
-
-		// 					return { ...p, productElementsResponse, productGradesResponse };
-		// 				}
-		// 				catch (err) {
-		// 					console.warn(`Error fetching data for product ${p.productId}:`, err);
-		// 					return p;
-		// 				}
-		// 			}),
-		// 		);
-
-		// 		const completeProducts = this.products.slice(0, 20).map((p) => {
-		// 			const enriched = enrichedProducts.find(ep => ep.productId === p.productId);
-		// 			return enriched || p;
-		// 		});
-
-		// 		this.products = completeProducts;
-		// 	}
-		// 	catch (error) {
-		// 		console.error("Error in fetch product elements and grades:", error);
-		// 		wizard.setFatalError(error);
-		// 	}
-		// 	finally {
-		// 		this.isLoading = false;
-		// 	}
-		// },
 	},
 });

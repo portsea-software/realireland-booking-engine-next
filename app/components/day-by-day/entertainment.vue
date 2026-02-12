@@ -44,11 +44,7 @@
 </template>
 
 <script setup lang="ts">
-type Product = {
-	title?: string;
-	productCode?: string;
-	[k: string]: any;
-};
+import type { Product } from "~~/shared/types";
 
 const props = withDefaults(
 	defineProps<{

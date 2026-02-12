@@ -1,4 +1,4 @@
-import type { Airport } from "~~/shared/types";
+import type { Airport, RequireTransfers, TransferProduct } from "~~/shared/types";
 
 const defaultAirport = "Dublin Airport";
 const defaultAirportCity = "DUB";
@@ -8,21 +8,6 @@ const traiPartialToPoint = "<nextacc>";
 
 const traoFromCity = "DNG";
 const traoPartialFromPoint = "<previousacc>";
-
-type RequireTransfers = "yes" | "no" | "none";
-
-type TransferProduct = {
-	productId: number;
-	// fromCity: { cityId: number; cityCode: string };
-	// toCity: { cityId: number; cityCode: string };
-	fromCity: string;
-	toCity: string;
-	fromCityCode: string;
-	toCityCode: string;
-	fromPoint: string;
-	toPoint: string;
-	[k: string]: any;
-};
 
 export const useTransfersStore = defineStore("transfers", {
 	state: () => ({
@@ -166,12 +151,6 @@ export const useTransfersStore = defineStore("transfers", {
 				if (this.inboundAirport != null) {
 					trai
 						= this.getCountyTransfersIn.find((t) => {
-							// console.log(t.fromCity, this.inboundAirport?.cityCode);
-							// console.log(t.fromPoint, this.inboundAirport!.airportName);
-							// console.log(t.toPoint, traiPartialToPoint);
-							console.log("trai-within", t);
-							console.log("this.inboundAirport", this.inboundAirport);
-
 							return (
 								t.fromCityCode === this.inboundAirport?.cityCode
 								&& t.fromPoint === String(this.inboundAirport!.airportName ?? "").substring(0, 20)
@@ -184,12 +163,6 @@ export const useTransfersStore = defineStore("transfers", {
 				if (this.outboundAirport != null) {
 					trao
 						= this.getCountyTransfersOut.find((t) => {
-							// console.log(t.fromCityCode, this.inboundAirport?.cityCode);
-							// console.log(t.fromPoint, this.inboundAirport!.airportName);
-							// console.log(t.toPoint, traiPartialToPoint);
-							console.log("trao-within", t);
-							console.log("this.inboundAirport", this.inboundAirport);
-
 							return (
 								t.fromCityCode === traoFromCity
 								&& String(t.fromPoint ?? "").toLowerCase().includes(traoPartialFromPoint)
@@ -202,9 +175,6 @@ export const useTransfersStore = defineStore("transfers", {
 
 			if (!trai) trai = this.getFallbackTrai ?? null;
 			if (!trao) trao = this.getFallbackTrao ?? null;
-
-			console.log("trai", trai);
-			console.log("trao", trao);
 
 			this.transferIn = trai;
 			this.transferOut = trao;

@@ -14,19 +14,9 @@ export type Passenger = {
 	firstName: string;
 	lastName: string;
 	age: AgeType;
-	dietaryRequirements: string;
+	dietaryRequirements?: string;
 	editable: boolean;
 };
-
-// export type RoomGrade = { gradeId: number; grade?: string };
-
-// export type RoomType = {
-// 	elementId: number;
-// 	element: string;
-// 	grades: RoomGrade[];
-// 	min: number;
-// 	max: number;
-// };
 
 export type Airport = {
 	cityCode: string;
@@ -106,4 +96,76 @@ export type FormattedProduct = {
 	passengerIds: number[];
 	fromDate: string;
 	toDate: string;
+};
+
+export type Title = { name: string; [k: string]: any };
+
+export type County = { areaId: number; name: string; [k: string]: any };
+
+export type Currency = { currencyCode: string; [k: string]: any };
+
+export type ProductImage = { imageId: number | string; url: string | null; caption?: string };
+
+export type Product = {
+	productId: number;
+	title: string;
+	productType: string;
+	productCode: string;
+
+	fromCity: string;
+	fromCityCode: string;
+	fromPoint: string;
+	fromTime: string;
+	fromTimeHours: number;
+
+	toCity: string;
+	toCityCode: string;
+	toPoint: string;
+	toTime: string;
+	toTimeHours: number;
+
+	rating: string;
+	description: string;
+
+	images: ProductImage[];
+	tariffs: Tariff[];
+	priceBase: string;
+
+	rank?: number;
+};
+
+export type Day = {
+	number: number;
+	date: string;
+	excursionId: number;
+	entertainmentId: number;
+	entertainmentTime: string;
+	hotelId: number;
+};
+
+export type Pricing = {
+	totalPriceFormatted: string;
+	amountToPayFormatted: string;
+	amountToPay: number;
+	totalPrice: number;
+};
+
+export type AddProductPayload = {
+	dayNo: number;
+	productId: number;
+	productType?: string;
+	productTime?: string;
+};
+
+export type RequireTransfers = "yes" | "no" | "none";
+
+export type TransferProduct = {
+	productId: number;
+	fromCity: string;
+	toCity: string;
+	fromCityCode: string;
+	toCityCode: string;
+	fromPoint: string;
+	toPoint: string;
+	[k: string]: any;
 };

@@ -38,8 +38,7 @@
 
 <script setup lang="ts">
 import { Modal } from "bootstrap";
-
-type Product = { productId: number; [k: string]: any };
+import type { Product } from "~~/shared/types";
 
 const props = defineProps<{
 	productType: string;

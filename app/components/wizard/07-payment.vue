@@ -56,7 +56,7 @@
 				</div>
 			</div>
 
-			<div class="card mt-2">
+			<div class="card mt-2 mb-5">
 				<div class="card-header">
 					SECURE PAYMENT - {{ amountToPay }}
 				</div>
@@ -219,10 +219,6 @@ async function submitPayment() {
 
 onMounted(async () => {
 	try {
-		// await bookingStore.createAxumBooking();
-
-		// await bookingStore.createPaymentIntent();
-
 		await bookingStore.fetchBookingInfo();
 
 		await bookingStore.createPaymentIntent();
@@ -242,8 +238,8 @@ onMounted(async () => {
 		card.on("change", cardChangeHandler);
 	}
 	catch (err) {
-		// bookingStore.bookingFailed = true;
-		// wizard.setFatalError(err);
+		bookingStore.bookingFailed = true;
+		wizard.setFatalError(err);
 		console.log(err);
 	}
 });

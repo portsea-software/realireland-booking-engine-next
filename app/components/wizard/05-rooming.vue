@@ -11,7 +11,6 @@
 			</div>
 		</div>
 
-		<!-- <pre>{{ roomTypes }}</pre> -->
 		<div class="row">
 			<RoomingHotel
 				v-for="hotel in roomTypes"

@@ -3,16 +3,6 @@ export default defineNuxtConfig({
 	modules: ["@nuxt/eslint", "@nuxt/fonts", "@nuxt/icon", "@pinia/nuxt"],
 	ssr: false,
 	devtools: { enabled: true },
-	app: {
-		// head: {
-		// 	script: [
-		// 		{
-		// 			src: "bootstrap/dist/js/bootstrap.bundle.min.js",
-		// 			tagPosition: "bodyClose",
-		// 		},
-		// 	],
-		// },
-	},
 	css: [
 		"bootstrap/dist/css/bootstrap.min.css",
 		"./app/assets/styles/site.scss",

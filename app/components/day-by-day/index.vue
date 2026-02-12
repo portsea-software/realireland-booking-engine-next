@@ -92,14 +92,7 @@
 </template>
 
 <script setup lang="ts">
-type Day = {
-	number: number;
-	date: string;
-	excursionId: number;
-	entertainmentId: number;
-	entertainmentTime: string;
-	hotelId: number;
-};
+import type { Day } from "~~/shared/types";
 
 const props = withDefaults(
 	defineProps<{

@@ -1,54 +1,7 @@
-type Day = {
-	number: number;
-	date: string;
-	excursionId: number;
-	entertainmentId: number;
-	entertainmentTime: string;
-	hotelId: number;
-};
-
-type Pricing = {
-	totalPriceFormatted: string;
-	amountToPayFormatted: string;
-	amountToPay: number;
-	totalPrice: number;
-};
-
-type AddProductPayload = {
-	dayNo: number;
-	productId: number;
-	productType?: string;
-	productTime?: string;
-};
+import type { AddProductPayload, Day, Pricing } from "~~/shared/types";
 
 export const useDayByDayStore = defineStore("dayByDay", {
 	state: () => ({
-		// days: [
-		// 	{
-		// 		number: 1,
-		// 		date: "Tuesday, 1 September 2026",
-		// 		excursionId: 0,
-		// 		entertainmentId: 0,
-		// 		entertainmentTime: "00:00",
-		// 		hotelId: 157,
-		// 	},
-		// 	{
-		// 		number: 2,
-		// 		date: "Wednesday, 2 September 2026",
-		// 		excursionId: 140,
-		// 		entertainmentId: 1524,
-		// 		entertainmentTime: "00:00",
-		// 		hotelId: 157,
-		// 	},
-		// 	{
-		// 		number: 3,
-		// 		date: "Thursday, 3 September 2026",
-		// 		excursionId: 0,
-		// 		entertainmentId: 0,
-		// 		entertainmentTime: "00:00",
-		// 		hotelId: 0,
-		// 	},
-		// ] as Day[],
 		days: [] as Day[],
 		restaurantTimes: ["18:30", "19:00", "19:30", "20:00", "20:30"],
 		calculatedPricing: true,

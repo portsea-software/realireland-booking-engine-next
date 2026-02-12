@@ -1,7 +1,4 @@
-type Currency = { currencyCode: string; [k: string]: any };
-type Airport = { airportName: string; [k: string]: any };
-type County = any;
-type Title = any;
+import type { Airport, County, Currency, Title } from "~~/shared/types";
 
 export const useStaticStore = defineStore("StaticStore", {
 	state: () => ({

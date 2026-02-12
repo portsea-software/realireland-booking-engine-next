@@ -1,7 +1,5 @@
 <template>
 	<div>
-		<!-- <pre>{{ inboundAirport }}</pre>
-		<pre>{{ outboundAirport }}</pre> -->
 		<div
 			v-if="!initialised"
 			class="d-flex justify-content-center mt-4"
@@ -210,8 +208,7 @@
 <script setup lang="ts">
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-
-type RequireTransfers = "yes" | "no" | "none";
+import type { RequireTransfers } from "~~/shared/types";
 
 const staticStore = useStaticStore();
 const transfersStore = useTransfersStore();

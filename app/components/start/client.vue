@@ -123,8 +123,7 @@
 <script setup lang="ts">
 import useVuelidate from "@vuelidate/core";
 import { required, email as emailValidator } from "@vuelidate/validators";
-
-type TitleOption = { name: string };
+import type { Title } from "~~/shared/types";
 
 type PassengerValue = {
 	title: string;
@@ -142,7 +141,7 @@ const emit = defineEmits<{
 }>();
 
 const staticStore = useStaticStore();
-const titles = computed<TitleOption[]>(() => staticStore.titles);
+const titles = computed<Title[]>(() => staticStore.titles);
 
 const rules = computed(() => ({
 	title: { required },

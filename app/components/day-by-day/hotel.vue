@@ -20,14 +20,11 @@
 </template>
 
 <script setup lang="ts">
-type Hotel = {
-	title?: string;
-	[k: string]: any;
-};
+import type { Product } from "~~/shared/types";
 
 const props = withDefaults(
 	defineProps<{
-		hotel?: Hotel | null;
+		hotel?: Product | null;
 		dayNumber: number;
 		readOnly?: boolean;
 	}>(),

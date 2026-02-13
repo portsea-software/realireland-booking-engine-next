@@ -21,7 +21,7 @@ export const usePassengersStore = defineStore("PassengersStore", {
 			minInfants,
 			maxInfants,
 
-			client: { title: "Mr", firstName: "Hafiz", lastName: "Hafiz", age: "ADL", email: "hafizjaidi786@gmail.com" } as Client,
+			client: { title: "", firstName: "", lastName: "", age: "ADL", email: "" } as Client,
 			passengers: [] as Passenger[],
 			noOfAdults: minAdults,
 			noOfChildren: minChildren,
